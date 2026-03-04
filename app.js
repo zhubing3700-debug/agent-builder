@@ -53,11 +53,11 @@ const customerData = {
       edges: [
         { from: 'authChange', to: 'auth', label: '变更对象' },
         { from: 'authChange', to: 'customer', label: '变更主体' },
-        { from: 'branchVisit', to: 'customer', label: '访问者' },
-        { from: 'customer', to: 'auth', label: '动作：撤销/解绑 (T-0)', color: '#ef4444', bold: true },
-        { from: 'customer', to: 'complaint', label: '发起' },
-        { from: 'customer', to: 'branch', label: '访问地点' },
-        { from: 'complaint', to: 'branch', label: '关于' },
+        { from: 'branchVisit', to: 'customer', label: '访问主体' },
+        { from: 'customer', to: 'auth', label: '操作：撤销/解绑 (T-0)', color: '#ef4444', bold: true },
+        { from: 'customer', to: 'complaint', label: '投诉发起方' },
+        { from: 'customer', to: 'branch', label: '服务网点' },
+        { from: 'complaint', to: 'branch', label: '服务关联' },
         { from: 'serviceRecord', to: 'complaint', label: '语音证据' },
         { from: 'serviceRecord', to: 'branch', label: '服务地点' },
         { from: 'wineEvent', to: 'customer', label: '历史参与 (T-90天)' }
@@ -69,7 +69,7 @@ const customerData = {
         icon: '📍',
         title: '感知',
         text: '捕捉到李总触发多项代扣业务 <span class="key">[撤销]</span> 动作，<span class="key">资金归集频率明显下降</span>。',
-        ontologyCall: '【实体】授权变更 -【属性】操作类型 → 撤销/解绑 (T-0)  |  【实体】代缴授权 -【属性】归集频率 → 断崖式下降 (-87%)'
+        ontologyCall: '【实体】授权变更 -【属性】操作类型 → 撤销/解绑 (T-0)  |  【实体】代缴授权 -【属性】月均归集额 → ¥85万 → ¥0（归零）'
       },
       {
         type: 'reason',
@@ -90,11 +90,11 @@ const customerData = {
         icon: '🚨',
         title: '结论',
         text: '判定为<span class="warning">"服务体验导致的报复性解绑"</span>。综合风险评分达 <span class="warning">92分</span>，如不干预，预计 7 天内资金将全部转出。',
-        ontologyCall: '【模型】风险评分引擎(授权变更 + 投诉工单 + 网点访问) → 92分  |  【模型】流失概率预测(7日) → 99%'
+        ontologyCall: '【模型】风险评分引擎: 网点滞留(+25) + 投诉未闭环(+30) + 代扣批量解绑(+22) + 情绪指标 0.92(+15) → 92分  |  【模型】流失概率预测(7日) → 99%'
       }
     ],
     actionType: 'urgent',
-    script: '李总您好，我是您的专属客户经理小朱。我关注到您周二在XX支行办理业务时等待时间较长，体验不佳，对此我代表分行向您诚挚致歉。为了弥补系统升级给您带来的不便，我特意为您申请了一份由行长签字的专属红酒答谢礼，稍后给您送过去。另外，系统提示您刚刚取消了代扣业务，请问近期是有其他的资金安排计划吗？',
+    script: '李总您好，我是您的专属客户经理小朱。我关注到您周二在XX支行办理业务时等待时间较长，体验不佳，对此我代表分行向您诚挚致歉。为了弥补系统升级给您带来的不便，我特意为您申请了一份由行长签字的专属红酒答谢礼，稍后给您送过去。另外，系统提示您刚刚取消了代扣业务，这可能会影响您的银行星级评定和贵宾通道使用权限，请问近期是有其他的资金安排计划吗？',
     scriptReason: '直面痛点（道歉排队久）→ 避重就轻（送红酒修复关系）→ 自然过渡（询问资金安排）',
     gift: {
       name: '2018年 奔富红酒',
@@ -122,21 +122,27 @@ const customerData = {
     vizType: 'ontologyGraph', // 张总直接显示本体图谱
     vizTitle: '客户本体',
     hasTabs: false,
-    // 张总的本体图谱（无网点访问和投诉）
+    // 张总的本体图谱（增加地址实体和王女士新增签约事件）
     ontologyGraph: {
       nodes: [
         // 事件层
-        { id: 'authChange', label: '授权变更', type: 'event', x: 220, y: 50, color: '#f59e0b', borderColor: '#d97706' },
+        { id: 'authChange', label: '授权变更', type: 'event', x: 140, y: 50, color: '#f59e0b', borderColor: '#d97706' },
+        { id: 'newSign', label: '新增签约', type: 'event', x: 400, y: 50, color: '#10b981', borderColor: '#059669' },
         // 对象层
-        { id: 'customer', label: '客户', subtitle: '张总', type: 'object', x: 380, y: 180, color: '#2563eb', borderColor: '#1d4ed8' },
-        { id: 'auth', label: '代缴授权', subtitle: '电费代扣', type: 'object', x: 120, y: 280, color: '#2563eb', borderColor: '#1d4ed8' },
-        { id: 'spouse', label: '配偶', subtitle: '王女士(客户号B)', type: 'object', x: 460, y: 300, color: '#8b5cf6', borderColor: '#7c3aed' }
+        { id: 'customer', label: '客户', subtitle: '张总', type: 'object', x: 280, y: 180, color: '#2563eb', borderColor: '#1d4ed8' },
+        { id: 'auth', label: '代缴授权', subtitle: '电费代扣', type: 'object', x: 80, y: 300, color: '#2563eb', borderColor: '#1d4ed8' },
+        { id: 'address', label: '住址', subtitle: '地址X', type: 'object', x: 280, y: 310, color: '#f59e0b', borderColor: '#d97706' },
+        { id: 'spouse', label: '配偶', subtitle: '王女士(客户号B)', type: 'object', x: 480, y: 180, color: '#8b5cf6', borderColor: '#7c3aed' }
       ],
       edges: [
         { from: 'authChange', to: 'auth', label: '变更对象' },
         { from: 'authChange', to: 'customer', label: '变更主体' },
-        { from: 'customer', to: 'auth', label: '拥有' },
-        { from: 'spouse', to: 'customer', label: '是…的配偶' }
+        { from: 'newSign', to: 'spouse', label: '签约方' },
+        { from: 'newSign', to: 'auth', label: '签约对象 (T+5min)', color: '#10b981', bold: true },
+        { from: 'customer', to: 'auth', label: '持有 → 解绑' },
+        { from: 'customer', to: 'address', label: '居住地址' },
+        { from: 'spouse', to: 'customer', label: '配偶关系' },
+        { from: 'spouse', to: 'address', label: '居住地址' }
       ]
     },
     cotSteps: [
@@ -158,8 +164,8 @@ const customerData = {
         type: 'judge',
         icon: '⚖️',
         title: '判断',
-        text: '资金流<span class="success">未流出家庭本体</span>。推测为"家庭财务分工调整"（可能为了凑王女士信用卡的消费积分）。',
-        ontologyCall: '【实体】家庭本体(地址X) -【属性】资金流向 → 内部流转  |  【实体】配偶:王女士 -【属性】信用卡积分需求 → 高'
+        text: '资金流<span class="success">未流出家庭本体</span>。推测为"家庭内部扣款账户变更"（将代扣签约集中转移到配偶名下统一管理）。',
+        ontologyCall: '【实体】家庭本体(地址X) -【属性】资金流向 → 内部流转  |  【实体】配偶:王女士 -【属性】新增签约 → 电费代扣 (同地址, T+5min)'
       },
       {
         type: 'conclude',
@@ -452,6 +458,24 @@ function setupOntologyTooltips() {
         '关系：张总配偶',
         '同一地址 X 同住',
         '近期操作：新增签约电费代扣'
+      ]
+    },
+    address: {
+      title: '📍 住址：地址X',
+      lines: [
+        '地址类型：家庭住址',
+        '关联客户：张总 + 王女士',
+        '代扣关联：电费代扣协议',
+        '交叉验证：<span style="color:#10b981;">同地址双向签约确认</span>'
+      ]
+    },
+    newSign: {
+      title: '✅ 新增签约事件',
+      lines: [
+        '签约方：王女士(客户号B)',
+        '签约时间：T+5分钟（20:20）',
+        '签约对象：电费代扣(地址X)',
+        '关联分析：<span style="color:#10b981;">与张总解绑为同一业务</span>'
       ]
     }
   };
@@ -931,7 +955,7 @@ function startCall() {
 
     // T+30: 小朱第一轮回应（共情 + 提供补偿 + 一键恢复链接）
     if (callSeconds === 30) {
-      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您代扣都停了，怕影响您平时信用积分，要不我给您发个一键恢复链接？');
+      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您代扣都停了，这会影响您的银行星级评定和贵宾优先通道，要不我给您发个一键恢复链接？');
       highlightDTNode('act-b1', '#3b82f6'); // 匹配左侧的意图：承诺解决+个性化挽留
     }
 
@@ -940,6 +964,20 @@ function startCall() {
       appendChatBubble('customer', '行吧，看你态度还不错。链接发过来我自己点，红酒寄到公司。');
       highlightDTNode('cust-b1', '#059669'); // 客户: 情绪缓和, 接受道歉
       highlightDTNode('cust-r1', '#059669'); // 对方案感兴趣
+    }
+
+    // T+51: 📊 情绪回正追踪卡片
+    if (callSeconds === 51) {
+      appendNavigatorCard('info', '📊 情绪曲线回正', `
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+          <span style="background:#1e3a5f; color:#93c5fd; padding:2px 8px; border-radius:4px; font-size:11px;">😡 0.92 → 😐 0.54 → 😊 0.35</span>
+        </div>
+        <div style="font-size:12px; color:#94a3b8; line-height:1.6;">
+          情绪指标持续下行，客户语调显著缓和<br>
+          “还不错”“自己点”‘→ 放弃抵触信号<br>
+          <span style="color:#6ee7b7;">✅ 挽回窗口已打开，建议立即执行闭环动作</span>
+        </div>
+      `);
     }
 
     // T+54: ✅ Agent 闭环执行
@@ -1052,7 +1090,7 @@ function sendProductMaterial(btn) {
 
   // 简单的 toast 提示
   const toast = document.createElement('div');
-  toast.innerText = "专属理财产品资料及链接已发送至李总微信";
+  toast.innerText = "✅ 已发送至李总微信：代扣一键恢复链接 + 奔富红酒专属礼遇单 + 高净值理财产品资料";
   toast.style.position = "absolute";
   toast.style.bottom = "20px";
   toast.style.left = "50%";
@@ -1263,8 +1301,33 @@ function generateAndPrintReport(customer) {
                         </p>
                       </div>
 
+                      <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">五、 后续行动时间线</div>
+                      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:30px;">
+                        <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+                          <div style="flex-shrink:0;width:28px;height:28px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#2563eb;">1</div>
+                          <div><strong style="color:#1e293b;">T+1 小时</strong><br><span style="font-size:13px;color:#4b5563;">发送代扣恢复链接 + 赠礼确认单至客户微信</span></div>
+                        </div>
+                        <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+                          <div style="flex-shrink:0;width:28px;height:28px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#2563eb;">2</div>
+                          <div><strong style="color:#1e293b;">T+24 小时</strong><br><span style="font-size:13px;color:#4b5563;">跟进 XX 支行投诉工单 #8892 处理进展</span></div>
+                        </div>
+                        <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+                          <div style="flex-shrink:0;width:28px;height:28px;background:#dbeafe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#2563eb;">3</div>
+                          <div><strong style="color:#1e293b;">T+3 天</strong><br><span style="font-size:13px;color:#4b5563;">回访确认代扣恢复情况及客户满意度</span></div>
+                        </div>
+                        <div style="display:flex;gap:12px;align-items:flex-start;">
+                          <div style="flex-shrink:0;width:28px;height:28px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#059669;">4</div>
+                          <div><strong style="color:#1e293b;">T+7 天</strong><br><span style="font-size:13px;color:#4b5563;">确认 AUM 未流失，关闭本次预警闭环</span></div>
+                        </div>
+                      </div>
+
+                      <div style="margin-top:30px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;line-height:1.6;">
+                        <strong>数据合规声明：</strong>本报告所涉及的客户数据、客服录音调取及情绪分析结果，均经内部授权流程审批，符合《中华人民共和国个人信息保护法》及本行《客户信息管理办法》相关规定。报告仅限内部使用，严禁外传。
+                      </div>
+
                     </div>
                     `;
+
 
   // 渲染到内嵌 overlay
   const reportOverlay = document.getElementById('reportOverlay');
