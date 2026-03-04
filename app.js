@@ -9,7 +9,7 @@ const customerData = {
     name: '李总',
     riskScore: 92,
     riskLevel: 'high',
-    aum: '2,850万',
+    aum: '180万',
     vizType: 'ontologyGraph', // 默认显示客户本体图谱
     vizTitle: '客户本体',
     hasTabs: true, // 李总有Tab切换
@@ -44,7 +44,7 @@ const customerData = {
         { id: 'branchVisit', label: '网点访问', type: 'event', x: 400, y: 50, color: '#3b82f6', borderColor: '#2563eb' },
         // 对象层
         { id: 'customer', label: '客户', subtitle: '李总', type: 'object', x: 380, y: 180, color: '#2563eb', borderColor: '#1d4ed8' },
-        { id: 'auth', label: '代缴授权', subtitle: '水电煤代扣', type: 'object', x: 80, y: 280, color: '#ef4444', borderColor: '#dc2626' },
+        { id: 'auth', label: '业务协议', subtitle: '房贷提前还贷+定投取消', type: 'object', x: 80, y: 280, color: '#ef4444', borderColor: '#dc2626' },
         { id: 'complaint', label: '投诉工单', subtitle: '未闭环', type: 'object', x: 280, y: 310, color: '#2563eb', borderColor: '#1d4ed8' },
         { id: 'branch', label: '银行网点', subtitle: 'XX支行', type: 'object', x: 480, y: 310, color: '#2563eb', borderColor: '#1d4ed8' },
         { id: 'serviceRecord', label: '客服录音', subtitle: '柜员服务记录', type: 'object', x: 380, y: 420, color: '#f59e0b', borderColor: '#d97706' },
@@ -68,8 +68,8 @@ const customerData = {
         type: 'perceive',
         icon: '📍',
         title: '感知',
-        text: '捕捉到李总触发多项代扣业务 <span class="key">[撤销]</span> 动作，<span class="key">资金归集频率明显下降</span>。',
-        ontologyCall: '【实体】授权变更 -【属性】操作类型 → 撤销/解绑 (T-0)  |  【实体】代缴授权 -【属性】月均归集额 → ¥85万 → ¥0（归零）'
+        text: '捕捉到李总触发多项业务 <span class="key">[房贷提前还贷 + 定投取消]</span> 动作，<span class="key">资金归集频率明显下降</span>。',
+        ontologyCall: '【实体】业务协议 -【属性】操作类型 → 房贷提前还贷 + 定投计划取消 (T-0)  |  【实体】业务协议 -【属性】月均归集额 → ¥8.5万 → ¥0（归零）'
       },
       {
         type: 'reason',
@@ -90,11 +90,11 @@ const customerData = {
         icon: '🚨',
         title: '结论',
         text: '判定为<span class="warning">"服务体验导致的报复性解绑"</span>。综合风险评分达 <span class="warning">92分</span>，如不干预，预计 7 天内资金将全部转出。',
-        ontologyCall: '【模型】风险评分引擎: 网点滞留(+25) + 投诉未闭环(+30) + 代扣批量解绑(+22) + 情绪指标 0.92(+15) → 92分  |  【模型】流失概率预测(7日) → 99%'
+        ontologyCall: '【模型】风险评分引擎: 网点滞留(+25) + 投诉未闭环(+30) + 房贷定投批量取消(+22) + 情绪指标 0.92(+15) → 92分  |  【模型】流失概率预测(7日) → 99%'
       }
     ],
     actionType: 'urgent',
-    script: '李总您好，我是您的专属客户经理小朱。我关注到您周二在XX支行办理业务时等待时间较长，体验不佳，对此我代表分行向您诚挚致歉。为了弥补系统升级给您带来的不便，我特意为您申请了一份由行长签字的专属红酒答谢礼，稍后给您送过去。另外，系统提示您刚刚取消了代扣业务，这可能会影响您的银行星级评定和贵宾通道使用权限，请问近期是有其他的资金安排计划吗？',
+    script: '李总您好，我是您的专属客户经理小朱。我关注到您周二在XX支行办理业务时等待时间较长，体验不佳，对此我代表分行向您诚挚致歉。为了弥补系统升级给您带来的不便，我特意为您申请了一份由行长签字的专属红酒答谢礼，稍后给您送过去。另外，系统提示您刚刚提前还清了房贷并取消了定投，这可能会影响您的银行星级评定和贵宾通道使用权限，请问近期是有其他的资金安排计划吗？',
     scriptReason: '直面痛点（道歉排队久）→ 避重就轻（送红酒修复关系）→ 自然过渡（询问资金安排）',
     gift: {
       name: '2018年 奔富红酒',
@@ -118,7 +118,7 @@ const customerData = {
     name: '张总',
     riskScore: 15,
     riskLevel: 'low',
-    aum: '1,200万',
+    aum: '120万',
     vizType: 'ontologyGraph', // 张总直接显示本体图谱
     vizTitle: '客户本体',
     hasTabs: false,
@@ -130,7 +130,7 @@ const customerData = {
         { id: 'newSign', label: '新增签约', type: 'event', x: 400, y: 50, color: '#10b981', borderColor: '#059669' },
         // 对象层
         { id: 'customer', label: '客户', subtitle: '张总', type: 'object', x: 280, y: 180, color: '#2563eb', borderColor: '#1d4ed8' },
-        { id: 'auth', label: '代缴授权', subtitle: '电费代扣', type: 'object', x: 80, y: 300, color: '#2563eb', borderColor: '#1d4ed8' },
+        { id: 'auth', label: '定投计划', subtitle: '基金定投', type: 'object', x: 80, y: 300, color: '#2563eb', borderColor: '#1d4ed8' },
         { id: 'address', label: '住址', subtitle: '地址X', type: 'object', x: 280, y: 310, color: '#f59e0b', borderColor: '#d97706' },
         { id: 'spouse', label: '配偶', subtitle: '王女士(客户号B)', type: 'object', x: 480, y: 180, color: '#8b5cf6', borderColor: '#7c3aed' }
       ],
@@ -139,7 +139,7 @@ const customerData = {
         { from: 'authChange', to: 'customer', label: '变更主体' },
         { from: 'newSign', to: 'spouse', label: '签约方' },
         { from: 'newSign', to: 'auth', label: '签约对象 (T+5min)', color: '#10b981', bold: true },
-        { from: 'customer', to: 'auth', label: '持有 → 解绑' },
+        { from: 'customer', to: 'auth', label: '持有 → 取消' },
         { from: 'customer', to: 'address', label: '居住地址' },
         { from: 'spouse', to: 'customer', label: '配偶关系' },
         { from: 'spouse', to: 'address', label: '居住地址' }
@@ -150,33 +150,33 @@ const customerData = {
         type: 'perceive',
         icon: '📍',
         title: '感知',
-        text: '监测到张总（客户号A）于昨日 20:15 <span class="key">解绑了家庭住址X的电费代扣</span>。',
-        ontologyCall: '【实体】授权变更 -【属性】操作类型 → 解绑  |  【实体】代缴授权 -【属性】业务类别 → 电费代扣 (地址X)'
+        text: '监测到张总（客户号A）于昨日 20:15 <span class="key">取消了基金定投计划</span>。',
+        ontologyCall: '【实体】业务协议 -【属性】操作类型 → 取消定投  |  【实体】定投计划 -【属性】业务类别 → 基金定投'
       },
       {
         type: 'reason',
         icon: '🔍',
         title: '推理（关键一步）',
-        text: '查询本体网络，发现同一地址X下，<span class="success">张总的配偶王女士（客户号B）在昨日 20:20（5分钟后）新增签约了电费代扣</span>。',
-        ontologyCall: '【实体】客户:张总 -【关系】配偶 → 王女士(客户号B)  |  【实体】代缴授权 -【属性】新增签约 → 电费代扣 (地址X, T+5min)'
+        text: '查询本体网络，发现<span class="success">张总的配偶王女士（客户号B）在昨日 20:20（5分钟后）新增签约了同一只基金的定投计划</span>。',
+        ontologyCall: '【实体】客户:张总 -【关系】配偶 → 王女士(客户号B)  |  【实体】定投计划 -【属性】新增签约 → 同一基金定投 (T+5min)'
       },
       {
         type: 'judge',
         icon: '⚖️',
         title: '判断',
-        text: '资金流<span class="success">未流出家庭本体</span>。推测为"家庭内部扣款账户变更"（将代扣签约集中转移到配偶名下统一管理）。',
-        ontologyCall: '【实体】家庭本体(地址X) -【属性】资金流向 → 内部流转  |  【实体】配偶:王女士 -【属性】新增签约 → 电费代扣 (同地址, T+5min)'
+        text: '资金流<span class="success">未流出家庭本体</span>。推测为"家庭内部理财账户调整"（将定投签约转移到配偶名下统一管理）。',
+        ontologyCall: '【实体】家庭本体 -【属性】资金流向 → 内部流转  |  【实体】配偶:王女士 -【属性】新增签约 → 同一基金定投 (T+5min)'
       },
       {
         type: 'conclude',
         icon: '✅',
         title: '结论',
         text: '<span class="success">流失风险极低</span>。建议：忽略此预警。',
-        ontologyCall: '【模型】风险评分引擎(授权变更 + 家庭本体交叉验证) → 15分  |  【模型】流失概率预测(7日) → 2%'
+        ontologyCall: '【模型】风险评分引擎(业务变更 + 家庭本体交叉验证) → 15分  |  【模型】流失概率预测(7日) → 2%'
       }
     ],
     actionType: 'simple',
-    suggestion: '经分析，这属于家庭内部支付方式变更，非流失风险。'
+    suggestion: '经分析，这属于家庭内部理财账户调整（定投签约转移至配偶），非流失风险。'
   }
 };
 
@@ -395,12 +395,12 @@ function setupOntologyTooltips() {
       ]
     },
     auth: {
-      title: '📄 代缴授权',
+      title: '📄 业务协议',
       lines: [
-        '类型：水电煤代扣 × 3 项',
-        '动作：<span style="color:#ef4444;">全部撤销 (T-0)</span>',
-        '影响：资金归集率下降 87%',
-        '关联风险：信用积分受损'
+        '类型：房贷提前还贷 + 定投取消',
+        '动作：<span style="color:#ef4444;">全部取消 (T-0)</span>',
+        '影响：月均归集额从¥8.5万归零',
+        '关联风险：银行星级评定受损'
       ]
     },
     authChange: {
@@ -424,8 +424,8 @@ function setupOntologyTooltips() {
     customer: {
       title: '👤 客户：李总',
       lines: [
-        'AUM：¥2,850 万',
-        '等级：私行钻石客户',
+        'AUM：¥180 万',
+        '标签：增长型 · 高管',
         '持有产品：12 项',
         '客户经理：小朱',
         '风险评分：<span style="color:#ef4444;">92</span>'
@@ -457,7 +457,7 @@ function setupOntologyTooltips() {
         '客户号：B',
         '关系：张总配偶',
         '同一地址 X 同住',
-        '近期操作：新增签约电费代扣'
+        '近期操作：新增签约基金定投'
       ]
     },
     address: {
@@ -465,7 +465,7 @@ function setupOntologyTooltips() {
       lines: [
         '地址类型：家庭住址',
         '关联客户：张总 + 王女士',
-        '代扣关联：电费代扣协议',
+        '关联业务：基金定投计划',
         '交叉验证：<span style="color:#10b981;">同地址双向签约确认</span>'
       ]
     },
@@ -474,8 +474,8 @@ function setupOntologyTooltips() {
       lines: [
         '签约方：王女士(客户号B)',
         '签约时间：T+5分钟（20:20）',
-        '签约对象：电费代扣(地址X)',
-        '关联分析：<span style="color:#10b981;">与张总解绑为同一业务</span>'
+        '签约对象：同一基金定投',
+        '关联分析：<span style="color:#10b981;">与张总取消为同一业务</span>'
       ]
     }
   };
@@ -925,7 +925,7 @@ function startCall() {
 
     // T+15: 李总愤怒爆发（VIP + 排队 + 柜员态度差）
     if (callSeconds === 15) {
-      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我把代扣全关了，正准备下周把资金转走！');
+      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我房贷都提前还清了、定投也取消了，正准备下周把资金转走！');
       // 高亮：意图B（服务不满/愤怒）
       highlightDTNode('intent-b', '#ef4444');
     }
@@ -948,14 +948,14 @@ function startCall() {
           <span style="background:#1e3a5f; color:#93c5fd; padding:2px 8px; border-radius:4px; font-size:11px;">降阻挽回</span>
         </div>
         <div style="margin-top:6px; padding:8px 10px; background:rgba(255,255,255,0.04); border-radius:6px; color:#e2e8f0; font-size:12px; line-height:1.5;">
-          💡 <span style="color:#60a5fa;">话术指引：</span>"对不住您…柜员态度我立刻反映…申请18年奔富做赔礼…代扣停了影响信用积分，发一键恢复链接…"
+          💡 <span style="color:#60a5fa;">话术指引：</span>"对不住您…柜员态度我立刻反映…申请18年奔富做赔礼…房贷还清定投取消会影响星级评定，发专属理财方案…"
         </div>
       `);
     }
 
     // T+30: 小朱第一轮回应（共情 + 提供补偿 + 一键恢复链接）
     if (callSeconds === 30) {
-      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您代扣都停了，这会影响您的银行星级评定和贵宾优先通道，要不我给您发个一键恢复链接？');
+      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您房贷都提前还清了，定投也取消了，这会影响您的银行星级评定和贵宾优先通道，要不我给您重新发个专属理财方案？');
       highlightDTNode('act-b1', '#3b82f6'); // 匹配左侧的意图：承诺解决+个性化挽留
     }
 
@@ -1262,7 +1262,7 @@ function generateAndPrintReport(customer) {
 
                       <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">一、 核心异动感知</div>
                       <div style="font-size:14px;color:#4b5563;margin-bottom:20px;">
-                        Agent 监控网络捕捉到客户近日发起 <span style="color:#2563eb;font-weight:600;">多项代扣业务解绑</span>。此动作虽未直接导致AUM下降，但引发了高度预警信号：<strong>资金归集频率呈断崖式下降</strong>。
+                        Agent 监控网络捕捉到客户近日发起 <span style="color:#2563eb;font-weight:600;">房贷提前还贷及定投计划取消</span>。此动作引发了高度预警信号：<strong>月均资金归集额从 ¥8.5万归零</strong>。
                       </div>
 
                       <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">二、 本体下钻追踪</div>
