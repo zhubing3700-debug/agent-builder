@@ -248,10 +248,10 @@
         </div>
     </div>
 
-    <!-- 通话界面 -->
+    <!-- 通话界面 (预加载 + 增量修正 双栏布局) -->
     <div class="call-overlay" id="callOverlay" style="display: none;">
         <div class="call-layout">
-            <!-- 左侧：通话面板 -->
+            <!-- 左侧：客户信息面板 -->
             <div class="call-left">
                 <div class="call-left-header">
                     <div class="call-status">
@@ -265,8 +265,12 @@
                     <div class="call-name">李总</div>
                     <div class="call-subtitle">高净值客户 · AUM ¥2,850万</div>
                 </div>
-                <div class="call-assist-area" id="callAssist">
-                    <!-- 实时辅助提示 -->
+                <!-- 本体实时追踪小图 -->
+                <div style="padding: 15px; flex:1; overflow-y:auto;">
+                    <div style="font-size:12px; color:#94a3b8; margin-bottom:8px;">🔮 Ontology 实时追踪</div>
+                    <div class="call-ontology" id="callOntology">
+                        <!-- 动态本体图谱 -->
+                    </div>
                 </div>
                 <button class="call-end-btn" id="endCallBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -277,14 +281,29 @@
                     挂断
                 </button>
             </div>
-            <!-- 右侧：实时本体图谱 -->
-            <div class="call-right">
-                <div class="call-right-header">
-                    <span class="call-right-icon">🔮</span>
-                    <span class="call-right-title">Ontology 实时追踪</span>
+
+            <!-- 中间：实时对话流 (ASR) -->
+            <div class="call-right" style="flex:1; display:flex; flex-direction:column;">
+                <div class="chat-flow" style="flex:1; display:flex; flex-direction:column; background:#fff; border-radius:12px; overflow:hidden; border:1px solid #e2e8f0;">
+                    <div class="chat-header" style="padding:12px 20px; font-size:14px; font-weight:600; color:#475569; background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
+                        实时对话流 (ASR) <span id="chatTimer" style="color:#94a3b8; margin-left:8px;"></span>
+                    </div>
+                    <div id="chatWrapper" class="chat-wrapper" style="flex:1; padding:20px; overflow-y:auto;">
+                        <!-- JS 动态插入聊天气泡 -->
+                    </div>
                 </div>
-                <div class="call-ontology" id="callOntology">
-                    <!-- 动态本体图谱 -->
+            </div>
+
+            <!-- 右侧：Agent 增量导航仪 (Live Navigator) -->
+            <div style="width:340px; display:flex; flex-direction:column;">
+                <div class="agent-navigator" style="flex:1; display:flex; flex-direction:column; background:#0f172a; border-radius:12px; border:1px solid #334155; overflow:hidden;">
+                    <div class="navigator-header" style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:#1e293b; border-bottom:1px solid #334155;">
+                        <span class="nav-title" style="font-size:14px; font-weight:600; color:#38bdf8;">⚡ Agent 增量导航仪 (Live Navigator)</span>
+                        <span class="nav-status-badge" id="navBadge" style="font-size:11px; padding:2px 8px; border-radius:10px; background:rgba(59,130,246,0.1); color:#94a3b8; border:1px solid #334155;">待命</span>
+                    </div>
+                    <div id="navigatorBody" class="navigator-body" style="flex:1; padding:20px; overflow-y:auto;">
+                        <!-- JS 动态插入导航卡片 -->
+                    </div>
                 </div>
             </div>
         </div>
