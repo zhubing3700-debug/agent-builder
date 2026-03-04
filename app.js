@@ -9,7 +9,7 @@ const customerData = {
     name: '李总',
     riskScore: 92,
     riskLevel: 'high',
-    aum: '180万',
+    aum: '750万',
     vizType: 'ontologyGraph', // 默认显示客户本体图谱
     vizTitle: '客户本体',
     hasTabs: true, // 李总有Tab切换
@@ -118,7 +118,7 @@ const customerData = {
     name: '张总',
     riskScore: 15,
     riskLevel: 'low',
-    aum: '120万',
+    aum: '600万',
     vizType: 'ontologyGraph', // 张总直接显示本体图谱
     vizTitle: '客户本体',
     hasTabs: false,
@@ -424,7 +424,7 @@ function setupOntologyTooltips() {
     customer: {
       title: '👤 客户：李总',
       lines: [
-        'AUM：¥180 万',
+        'AUM：¥750 万',
         '标签：增长型 · 高管',
         '持有产品：12 项',
         '客户经理：小朱',
@@ -485,7 +485,7 @@ function setupOntologyTooltips() {
     tooltipData.customer = {
       title: '👤 客户：张总',
       lines: [
-        'AUM：¥120 万',
+        'AUM：¥600 万',
         '标签：潜力型 · 代发工资',
         '持有产品：6 项',
         '客户经理：小朱',
