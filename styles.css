@@ -1082,6 +1082,34 @@ body {
     font-weight: 500;
 }
 
+.cot-ontology-call {
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: rgba(59, 130, 246, 0.08);
+    /* 淡蓝色背景 */
+    border-radius: 6px;
+    border-left: 2px solid var(--accent-blue);
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+.cot-ontology-icon {
+    font-size: 13px;
+}
+
+.cot-ontology-call code {
+    background: rgba(59, 130, 246, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #1d4ed8;
+    font-weight: 500;
+}
+
 /* ---------- 行动面板 ---------- */
 .action-panel {
     background: var(--bg-card);
@@ -1383,7 +1411,7 @@ body {
 
 /* 左侧通话面板 */
 .call-left {
-    flex: 0 0 280px;
+    flex: 0 0 420px;
     background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
     display: flex;
     flex-direction: column;
@@ -1664,9 +1692,11 @@ body {
         border-top: 1px solid var(--border-primary);
     }
 }
+
 /* ================= 通话悬浮窗双栏重构样式 ================= */
 .call-modal-content {
-    max-width: 900px !important; /* 扩宽悬浮窗 */
+    max-width: 900px !important;
+    /* 扩宽悬浮窗 */
     width: 90% !important;
     height: 600px;
     display: flex;
@@ -1675,7 +1705,8 @@ body {
 
 .call-layout-grid {
     display: grid;
-    grid-template-columns: 1fr 400px; /* 左侧自适应，右侧固定 400px */
+    grid-template-columns: 1fr 400px;
+    /* 左侧自适应，右侧固定 400px */
     gap: 20px;
     padding: 20px !important;
     flex: 1;
@@ -1733,7 +1764,8 @@ body {
 .nav-title {
     font-size: 14px;
     font-weight: 600;
-    color: #38bdf8; /* 科技蓝 */
+    color: #38bdf8;
+    /* 科技蓝 */
     text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
 }
 
@@ -1756,9 +1788,11 @@ body {
 .navigator-body::-webkit-scrollbar {
     width: 6px;
 }
+
 .navigator-body::-webkit-scrollbar-track {
     background: rgba(15, 23, 42, 0.5);
 }
+
 .navigator-body::-webkit-scrollbar-thumb {
     background: #334155;
     border-radius: 3px;
@@ -1769,7 +1803,211 @@ body {
 }
 
 @keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+/* 本体图谱 Tooltip 浮窗 */
+.ontology-tooltip {
+    position: absolute;
+    z-index: 100;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    min-width: 200px;
+    max-width: 240px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+    pointer-events: none;
+    animation: fadeInUp 0.2s ease;
+}
+
+/* 节点 Hover 高亮效果 */
+.ontology-node-hover rect {
+    transition: filter 0.2s ease, stroke-width 0.2s ease;
+}
+
+.ontology-node-hover:hover rect {
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+    stroke-width: 2.5;
+}
+
+/* ---------- 通话决策树样式 ---------- */
+.call-decision-tree {
+    width: 100%;
+    font-size: 11px;
+}
+
+.dt-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.dt-node {
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 1.3;
+    text-align: center;
+    transition: all 0.6s ease;
+    word-break: break-word;
+}
+
+.dt-row {
+    display: flex;
+    gap: 6px;
+}
+
+.dt-row .dt-branch {
+    flex: 1;
+    min-width: 0;
+}
+
+.dt-connector {
+    text-align: center;
+    color: #475569;
+    font-size: 12px;
+    line-height: 18px;
+    opacity: 0.5;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---------- 报告内嵌 Overlay ---------- */
+.report-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.85);
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+}
+
+.report-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    flex-shrink: 0;
+}
+
+.report-toolbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.report-toolbar-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-report-download {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn-report-download:hover {
+    background: #1d4ed8;
+}
+
+.btn-report-close {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #475569;
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.btn-report-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.report-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.report-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.report-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.report-body::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+}
+
+/* 报告打印样式 */
+@media print {
+    body>*:not(.report-overlay) {
+        display: none !important;
+    }
+
+    .report-overlay {
+        position: static !important;
+        background: white !important;
+    }
+
+    .report-toolbar {
+        display: none !important;
+    }
+
+    .report-body {
+        padding: 0 !important;
+        overflow: visible !important;
+    }
 }

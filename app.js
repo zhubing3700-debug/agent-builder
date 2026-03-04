@@ -68,25 +68,29 @@ const customerData = {
         type: 'perceive',
         icon: '📍',
         title: '感知',
-        text: '捕捉到李总触发多项代扣业务 <span class="key">[撤销]</span> 动作，<span class="key">资金归集频率明显下降</span>。'
+        text: '捕捉到李总触发多项代扣业务 <span class="key">[撤销]</span> 动作，<span class="key">资金归集频率明显下降</span>。',
+        ontologyCall: '【实体】授权变更 -【属性】操作类型 → 撤销/解绑 (T-0)  |  【实体】代缴授权 -【属性】归集频率 → 断崖式下降 (-87%)'
       },
       {
         type: 'reason',
         icon: '🔍',
         title: '本体溯源',
-        text: '检索时序本体，发现其 T-3 天在 <span class="warning">[XX支行]</span> 产生访问记录，停留时长异常（<span class="warning">145分钟</span>）。'
+        text: '检索时序本体，发现其 T-3 天在 <span class="warning">[XX支行]</span> 产生访问记录，停留时长异常（<span class="warning">145分钟</span>）。',
+        ontologyCall: '【实体】客户:李总 -【关系】网点访问.地点 → XX支行  |  【实体】网点访问 -【属性】停留时长 → 145min (阈值: 30min)'
       },
       {
         type: 'judge',
         icon: '⚖️',
         title: '情绪分析',
-        text: '提取关联的 <span class="warning">[投诉工单]</span> 文本及语音记录，识别到 <span class="warning">愤怒情绪</span>，且工单尚未妥善闭环。'
+        text: '提取关联的 <span class="warning">[投诉工单]</span> 文本及语音记录，识别到 <span class="warning">愤怒情绪</span>，且工单尚未妥善闭环。',
+        ontologyCall: '【实体】投诉工单 -【属性】情绪标签 → 愤怒 (0.92)  |  【实体】投诉工单 -【属性】闭环状态 → 未闭环  |  【实体】客服录音 -【属性】关键词 → [排队, VIP, 欺骗]'
       },
       {
         type: 'conclude high',
         icon: '🚨',
         title: '结论',
-        text: '判定为<span class="warning">"服务体验导致的报复性解绑"</span>。综合风险评分达 <span class="warning">92分</span>，如不干预，预计 7 天内资金将全部转出。'
+        text: '判定为<span class="warning">"服务体验导致的报复性解绑"</span>。综合风险评分达 <span class="warning">92分</span>，如不干预，预计 7 天内资金将全部转出。',
+        ontologyCall: '【模型】风险评分引擎(授权变更 + 投诉工单 + 网点访问) → 92分  |  【模型】流失概率预测(7日) → 99%'
       }
     ],
     actionType: 'urgent',
@@ -97,7 +101,17 @@ const customerData = {
       icon: '🍷',
       stock: '库存充足',
       reason: 'Agent 检索本体：发现李总 3 个月前曾参与 [高端红酒品鉴会]，生成个性化推荐。'
-    }
+    },
+    // 预设决策树：通话前 Agent 预加载的策略分支（关联本体节点）
+    decisionTree: [
+      { id: 'root', label: '系统监测：代扣异动', type: 'trigger', ontologyRef: '授权变更', next: ['branch1'] },
+      { id: 'branch1', label: '意图识别：客户情绪判定', type: 'decision', ontologyRef: '投诉工单', next: ['leaf1a', 'leaf1b'] },
+      { id: 'leaf1a', label: '情绪平稳 → 常规挽留话术', type: 'action', ontologyRef: null, next: [] },
+      { id: 'leaf1b', label: '情绪激烈 → 切换「特权修复」', type: 'action-highlight', ontologyRef: '客服录音', next: ['branch2'] },
+      { id: 'branch2', label: '痛点追踪：VIP 权益 / 排队体验', type: 'decision', ontologyRef: '银行网点', next: ['leaf2a'] },
+      { id: 'leaf2a', label: '追责承诺 + 定向权益 + 降阻挽回', type: 'strategy', ontologyRef: '营销活动', next: ['leaf3a'] },
+      { id: 'leaf3a', label: '工单督办 #8892 + 奔富红酒 + 一键恢复链接', type: 'output', ontologyRef: '代缴授权', next: [] },
+    ]
   },
   zhang: {
     id: 'zhang',
@@ -130,25 +144,29 @@ const customerData = {
         type: 'perceive',
         icon: '📍',
         title: '感知',
-        text: '监测到张总（客户号A）于昨日 20:15 <span class="key">解绑了家庭住址X的电费代扣</span>。'
+        text: '监测到张总（客户号A）于昨日 20:15 <span class="key">解绑了家庭住址X的电费代扣</span>。',
+        ontologyCall: '【实体】授权变更 -【属性】操作类型 → 解绑  |  【实体】代缴授权 -【属性】业务类别 → 电费代扣 (地址X)'
       },
       {
         type: 'reason',
         icon: '🔍',
         title: '推理（关键一步）',
-        text: '查询本体网络，发现同一地址X下，<span class="success">张总的配偶王女士（客户号B）在昨日 20:20（5分钟后）新增签约了电费代扣</span>。'
+        text: '查询本体网络，发现同一地址X下，<span class="success">张总的配偶王女士（客户号B）在昨日 20:20（5分钟后）新增签约了电费代扣</span>。',
+        ontologyCall: '【实体】客户:张总 -【关系】配偶 → 王女士(客户号B)  |  【实体】代缴授权 -【属性】新增签约 → 电费代扣 (地址X, T+5min)'
       },
       {
         type: 'judge',
         icon: '⚖️',
         title: '判断',
-        text: '资金流<span class="success">未流出家庭本体</span>。推测为"家庭财务分工调整"（可能为了凑王女士信用卡的消费积分）。'
+        text: '资金流<span class="success">未流出家庭本体</span>。推测为"家庭财务分工调整"（可能为了凑王女士信用卡的消费积分）。',
+        ontologyCall: '【实体】家庭本体(地址X) -【属性】资金流向 → 内部流转  |  【实体】配偶:王女士 -【属性】信用卡积分需求 → 高'
       },
       {
         type: 'conclude',
         icon: '✅',
         title: '结论',
-        text: '<span class="success">流失风险极低</span>。建议：忽略此预警。'
+        text: '<span class="success">流失风险极低</span>。建议：忽略此预警。',
+        ontologyCall: '【模型】风险评分引擎(授权变更 + 家庭本体交叉验证) → 15分  |  【模型】流失概率预测(7日) → 2%'
       }
     ],
     actionType: 'simple',
@@ -225,7 +243,7 @@ function renderOntology(nodes) {
 }
 
 /**
- * 渲染本体图谱（SVG 节点 + 连线）
+ * 渲染本体图谱（SVG 节点 + 连线）— 支持 Hover 穿透
  */
 function renderOntologyGraph(graphData) {
   const { nodes, edges } = graphData;
@@ -274,7 +292,7 @@ function renderOntologyGraph(graphData) {
         `;
   });
 
-  // 渲染节点
+  // 渲染节点（含 Hover 穿透数据）
   let nodesHtml = '';
   nodes.forEach((node, i) => {
     const isEvent = node.type === 'event';
@@ -289,24 +307,29 @@ function renderOntologyGraph(graphData) {
     const textColor = '#1e293b';
 
     nodesHtml += `
-            <g opacity="0">
+            <g class="ontology-node-hover" data-node-id="${node.id}" opacity="0"
+               style="cursor:pointer;">
                 <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="${0.1 + i * 0.12}s" fill="freeze"/>
                 <rect x="${x}" y="${y}" width="${rectW}" height="${rectH}" rx="${rx}"
                       fill="${fillColor}" stroke="${strokeColor}" stroke-width="${isEvent ? 2 : 1.5}"
                       ${isEvent ? `stroke-dasharray="none"` : ''}/>
                 <text x="${node.x}" y="${node.y + (node.subtitle ? -4 : 4)}"
                       text-anchor="middle" font-size="13" font-weight="600"
-                      fill="${textColor}">${node.label}</text>
+                      fill="${textColor}" style="pointer-events:none;">${node.label}</text>
                 ${node.subtitle ? `
                 <text x="${node.x}" y="${node.y + 14}"
-                      text-anchor="middle" font-size="10" fill="#94a3b8">${node.subtitle}</text>
+                      text-anchor="middle" font-size="10" fill="#94a3b8"
+                      style="pointer-events:none;">${node.subtitle}</text>
                 ` : ''}
             </g>
         `;
   });
 
+  // 渲染完毕后需要调用事件绑定（使用 setTimeout 确保 DOM 已更新）
+  setTimeout(() => { setupOntologyTooltips(); }, 600);
+
   return `
-    <div class="ontology-graph-container">
+    <div class="ontology-graph-container" style="position:relative;">
         <svg viewBox="0 0 ${svgWidth} ${svgHeight}" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
@@ -332,23 +355,177 @@ function renderOntologyGraph(graphData) {
             <!-- 节点 -->
             ${nodesHtml}
         </svg>
+        <!-- Tooltip 浮窗 -->
+        <div id="ontologyTooltip" class="ontology-tooltip" style="display:none;"></div>
     </div>
     `;
+}
+
+/**
+ * 设置本体图谱节点的 Hover 穿透 Tooltip
+ */
+function setupOntologyTooltips() {
+  // 各节点的业务数据映射
+  const tooltipData = {
+    complaint: {
+      title: '📋 投诉工单',
+      lines: [
+        '客户：李总',
+        '日期：T-3 天',
+        '投诉地点：XX支行',
+        '原因：VIP 优先通道未兑现',
+        '情绪：<span style="color:#ef4444;">愤怒</span>',
+        '状态：<span style="color:#f59e0b;">未闭环</span>'
+      ]
+    },
+    branchVisit: {
+      title: '🏦 网点访问记录',
+      lines: [
+        '访问地点：XX支行',
+        '日期：T-3 天',
+        '排队时长：<span style="color:#ef4444;">145 分钟</span>',
+        '办理业务：个人转账',
+        '柜员：#0372（已标记）'
+      ]
+    },
+    auth: {
+      title: '📄 代缴授权',
+      lines: [
+        '类型：水电煤代扣 × 3 项',
+        '动作：<span style="color:#ef4444;">全部撤销 (T-0)</span>',
+        '影响：资金归集率下降 87%',
+        '关联风险：信用积分受损'
+      ]
+    },
+    authChange: {
+      title: '⚡ 授权变更事件',
+      lines: [
+        '触发时间：T-0 天 09:15',
+        '变更类型：批量解绑',
+        '涉及业务：3 项代扣协议',
+        '风险信号：<span style="color:#ef4444;">异常</span>'
+      ]
+    },
+    branch: {
+      title: '🏢 银行网点：XX支行',
+      lines: [
+        '地址：XX市XX区XX路88号',
+        '当日客流：127 人',
+        '平均等候：42 分钟',
+        'VIP 通道：<span style="color:#ef4444;">当日未开放</span>'
+      ]
+    },
+    customer: {
+      title: '👤 客户：李总',
+      lines: [
+        'AUM：¥2,850 万',
+        '等级：私行钻石客户',
+        '持有产品：12 项',
+        '客户经理：小朱',
+        '风险评分：<span style="color:#ef4444;">92</span>'
+      ]
+    },
+    serviceRecord: {
+      title: '🎙️ 客服录音',
+      lines: [
+        '录音编号：SR-20260206-0372',
+        '时长：8分32秒',
+        '语义标签：情绪愤怒',
+        '关联工单：投诉工单（未闭环）',
+        '柜员表现：<span style="color:#f59e0b;">需改进</span>'
+      ]
+    },
+    wineEvent: {
+      title: '🍷 营销活动',
+      lines: [
+        '活动名称：高端红酒品鉴会',
+        '参与时间：T-90 天',
+        '偏好标签：红酒收藏',
+        '可用权益：<span style="color:#8b5cf6;">18年奔富 1 支</span>'
+      ]
+    },
+    // 张总的节点
+    spouse: {
+      title: '👩 配偶：王女士',
+      lines: [
+        '客户号：B',
+        '关系：张总配偶',
+        '同一地址 X 同住',
+        '近期操作：新增签约电费代扣'
+      ]
+    }
+  };
+
+  const nodeEls = document.querySelectorAll('.ontology-node-hover');
+  const tooltip = document.getElementById('ontologyTooltip');
+  if (!tooltip) return;
+
+  nodeEls.forEach(el => {
+    const nodeId = el.getAttribute('data-node-id');
+    const data = tooltipData[nodeId];
+    if (!data) return;
+
+    el.addEventListener('mouseenter', (e) => {
+      const svg = el.closest('svg');
+      const container = svg ? svg.parentElement : null;
+      if (!container) return;
+
+      const svgRect = svg.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // 获取节点在 SVG 中的位置
+      const rect = el.querySelector('rect');
+      if (!rect) return;
+      const nodeX = parseFloat(rect.getAttribute('x'));
+      const nodeY = parseFloat(rect.getAttribute('y'));
+      const nodeW = parseFloat(rect.getAttribute('width'));
+
+      // SVG viewBox 到实际像素的缩放比
+      const viewBox = svg.viewBox.baseVal;
+      const scaleX = svgRect.width / viewBox.width;
+      const scaleY = svgRect.height / viewBox.height;
+
+      // 计算 Tooltip 位置（在节点右侧）
+      let tooltipX = (nodeX + nodeW + 8) * scaleX;
+      let tooltipY = nodeY * scaleY;
+
+      // 如果超出右边界，放到左侧
+      if (tooltipX + 220 > containerRect.width) {
+        tooltipX = (nodeX - 228) * scaleX;
+      }
+
+      tooltip.innerHTML = `
+        <div style="font-weight:600; margin-bottom:6px; font-size:13px; color:#1e293b;">${data.title}</div>
+        ${data.lines.map(line => `<div style="font-size:12px; color:#475569; line-height:1.7;">${line}</div>`).join('')}
+      `;
+      tooltip.style.left = tooltipX + 'px';
+      tooltip.style.top = tooltipY + 'px';
+      tooltip.style.display = 'block';
+    });
+
+    el.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
+  });
 }
 
 /**
  * 渲染思考链
  */
 function renderCotSteps(steps) {
-  return steps.map(step => `
-    <div class="cot-step ${step.type}">
-      <div class="cot-step-icon">${step.icon}</div>
-      <div class="cot-step-content">
-        <div class="cot-step-title">${step.title}</div>
-        <div class="cot-step-text">${step.text}</div>
-      </div>
-    </div>
-  `).join('');
+  return steps.map(step => {
+    const ontologyHtml = step.ontologyCall
+      ? '<div class="cot-ontology-call"><span class="cot-ontology-icon">🔗</span>' + step.ontologyCall.split('|').map(s => '<code>' + s.trim() + '</code>').join('') + '</div>'
+      : '';
+    return '<div class="cot-step ' + step.type + '">' +
+      '<div class="cot-step-icon">' + step.icon + '</div>' +
+      '<div class="cot-step-content">' +
+      '<div class="cot-step-title">' + step.title + '</div>' +
+      '<div class="cot-step-text">' + step.text + '</div>' +
+      ontologyHtml +
+      '</div>' +
+      '</div>';
+  }).join('');
 }
 
 /**
@@ -586,132 +763,94 @@ function showIgnoreModal() {
   });
 }
 
-/**
- * 渲染通话中的本体图谱（灰色初始状态，逐步高亮）
- */
-function renderCallOntology(graphData) {
-  const { nodes, edges } = graphData;
-  // 适配 280px 左侧面板的小画布
-  const svgWidth = 260;
-  const svgHeight = 240;
 
-  // 为通话场景重新映射节点坐标（小画布）
-  const coordMap = {
-    customer: { x: 130, y: 40 },
-    auth: { x: 50, y: 100 },
-    authChange: { x: 210, y: 100 },
-    complaint: { x: 50, y: 160 },
-    branch: { x: 210, y: 160 },
-    serviceRecord: { x: 130, y: 200 },
-    wineEvent: { x: 50, y: 230 },
-    branchVisit: { x: 210, y: 60 },
+/**
+ * 渲染通话中的动态决策树
+ */
+function renderCallDecisionTree(isReport = false) {
+  const treeData = [
+    { id: 'start', label: '通话开始：理财经理开场白', type: 'start', level: 0 },
+    { id: 'intent', label: '客户意图识别', type: 'decision', level: 1 },
+    { id: 'intent-a', label: '确认代扣/资金安排', type: 'branch-label', level: 2, col: 0 },
+    { id: 'intent-b', label: '抱怨服务/VIP未兑现 (愤怒)', type: 'branch-label-active', level: 2, col: 1 },
+    { id: 'intent-c', label: '直接威胁转走资金 (强硬)', type: 'branch-label', level: 2, col: 2 },
+    { id: 'agent-a', label: '确认信息, 探寻不满', type: 'agent', level: 3, col: 0 },
+    { id: 'agent-b', label: '真诚道歉, 承诺调查', type: 'agent-active', level: 3, col: 1 },
+    { id: 'agent-c', label: '倾听, 承认风险, 求挽回', type: 'agent', level: 3, col: 2 },
+    { id: 'cust-b1', label: '客户: 情绪缓和, 接受道歉', type: 'customer-reaction', level: 4, col: 0 },
+    { id: 'cust-b2', label: '客户: 持续激动, 不接受', type: 'customer-reaction', level: 4, col: 1 },
+    { id: 'act-b1', label: '承诺解决 + 个性化挽留', type: 'agent-highlight', level: 5, col: 0 },
+    { id: 'act-b2', label: '升级处理, 高层介入', type: 'agent', level: 5, col: 1 },
+    { id: 'cust-r1', label: '对方案感兴趣', type: 'customer-positive', level: 6, col: 0 },
+    { id: 'cust-r2', label: '不感兴趣/仍有疑虑', type: 'customer-reaction', level: 6, col: 1 },
+    { id: 'act-final', label: '立即行动, 约定回访, 解决遗留', type: 'agent-success', level: 7, col: 0 },
+    { id: 'end', label: '通话结束: 达成共识, 生成待办', type: 'end', level: 8 },
+  ];
+
+  const typeStyles = {
+    'start': { bg: '#f8fafc', border: '#94a3b8', color: '#475569', icon: '📞' },
+    'decision': { bg: '#faf5ff', border: '#a78bfa', color: '#6d28d9', icon: '◆' },
+    'branch-label': { bg: '#fef9c3', border: '#f59e0b', color: '#92400e', icon: '' },
+    'branch-label-active': { bg: '#fee2e2', border: '#ef4444', color: '#991b1b', icon: '' },
+    'agent': { bg: '#f0f9ff', border: '#93c5fd', color: '#1e40af', icon: '' },
+    'agent-active': { bg: '#dbeafe', border: '#3b82f6', color: '#1d4ed8', icon: '' },
+    'agent-highlight': { bg: '#d1fae5', border: '#10b981', color: '#065f46', icon: '' },
+    'agent-success': { bg: '#d1fae5', border: '#059669', color: '#064e3b', icon: '✅' },
+    'customer-reaction': { bg: '#fef3c7', border: '#d97706', color: '#92400e', icon: '' },
+    'customer-positive': { bg: '#d1fae5', border: '#10b981', color: '#065f46', icon: '' },
+    'end': { bg: '#f0f9ff', border: '#3b82f6', color: '#1e40af', icon: '🎯' },
   };
 
-  const nodeMap = {};
-  nodes.forEach(n => { nodeMap[n.id] = n; });
+  let html = '<div class="dt-flow">';
+  let prevLevel = -1;
 
-  let edgesHtml = '';
-  edges.forEach((edge, i) => {
-    const from = nodeMap[edge.from];
-    const to = nodeMap[edge.to];
-    if (!from || !to) return;
+  treeData.forEach((node, i) => {
+    const s = typeStyles[node.type] || typeStyles['agent'];
+    const isFullWidth = node.col === undefined;
 
-    const p1 = coordMap[edge.from] || { x: from.x * 0.45, y: from.y * 0.5 };
-    const p2 = coordMap[edge.to] || { x: to.x * 0.45, y: to.y * 0.5 };
-    const midX = (p1.x + p2.x) / 2;
-    const midY = (p1.y + p2.y) / 2;
+    if (i > 0 && node.level > prevLevel) {
+      html += '<div class="dt-connector">↓</div>';
+    }
 
-    edgesHtml += `
-            <line id="call-edge-${i}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}"
-                  stroke="#444" stroke-width="0.8" marker-end="url(#arrowhead-call)"
-                  style="transition: all 0.8s ease; opacity:0.4;"/>
-            <text id="call-edge-label-${i}" x="${midX}" y="${midY - 4}" text-anchor="middle"
-                  font-size="7" fill="#555" style="transition: fill 0.8s ease;">
-                ${edge.label}
-            </text>
-        `;
+    const opacityStr = isReport ? '1' : '0.45';
+    const idStr = isReport ? '' : 'id="dt-' + node.id + '"';
+
+    if (isFullWidth) {
+      html += '<div class="dt-node" ' + idStr + ' data-level="' + node.level + '" style="background:' + s.bg + ';border:1.5px solid ' + s.border + ';color:' + s.color + ';opacity:' + opacityStr + ';">' + (s.icon ? s.icon + ' ' : '') + node.label + '</div>';
+    } else {
+      const prevNode = treeData[i - 1];
+      if (!prevNode || prevNode.level !== node.level || prevNode.col === undefined) {
+        html += '<div class="dt-row">';
+      }
+      html += '<div class="dt-node dt-branch" ' + idStr + ' data-level="' + node.level + '" style="background:' + s.bg + ';border:1.5px solid ' + s.border + ';color:' + s.color + ';opacity:' + opacityStr + ';">' + (s.icon ? s.icon + ' ' : '') + node.label + '</div>';
+      const nextNode = treeData[i + 1];
+      if (!nextNode || nextNode.level !== node.level) {
+        html += '</div>';
+      }
+    }
+    prevLevel = node.level;
   });
 
-  let nodesHtml = '';
-  nodes.forEach((node) => {
-    const pos = coordMap[node.id] || { x: node.x * 0.45, y: node.y * 0.5 };
-    const isEvent = node.type === 'event';
-    const rectW = isEvent ? 70 : 80;
-    const rectH = isEvent ? 22 : 28;
-    const rx = isEvent ? 4 : 5;
-    const x = pos.x - rectW / 2;
-    const y = pos.y - rectH / 2;
-
-    nodesHtml += `
-            <g id="call-node-${node.id}" opacity="0.35" style="transition: all 0.8s ease;">
-                <rect x="${x}" y="${y}" width="${rectW}" height="${rectH}" rx="${rx}"
-                      fill="${isEvent ? '#fef9ee' : '#f8fafc'}" stroke="#555" stroke-width="1"/>
-                <text x="${pos.x}" y="${pos.y + (node.subtitle ? -2 : 3)}"
-                      text-anchor="middle" font-size="8" font-weight="600"
-                      fill="#777">${node.label}</text>
-                ${node.subtitle ? `
-                <text x="${pos.x}" y="${pos.y + 9}"
-                      text-anchor="middle" font-size="6.5" fill="#999">${node.subtitle}</text>
-                ` : ''}
-            </g>
-        `;
-  });
-
-  return `
-        <svg viewBox="0 0 ${svgWidth} ${svgHeight}" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <marker id="arrowhead-call" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
-                    <polygon points="0 0, 6 2, 0 4" fill="#555" id="arrowhead-call-fill"/>
-                </marker>
-            </defs>
-
-            <!-- 连线 -->
-            ${edgesHtml}
-
-            <!-- 节点 -->
-            ${nodesHtml}
-        </svg>
-    `;
+  html += '</div>';
+  return html;
 }
 
 /**
- * 高亮本体图谱节点
+ * 高亮决策树节点
  */
-function highlightOntologyNode(nodeId, color) {
-  const nodeEl = document.getElementById(`call-node-${nodeId}`);
-  if (!nodeEl) return;
-
-  nodeEl.style.opacity = '1';
-  const rect = nodeEl.querySelector('rect');
-  const texts = nodeEl.querySelectorAll('text');
-  if (rect) {
-    rect.setAttribute('stroke', color);
-    rect.setAttribute('stroke-width', '2.5');
-    rect.style.filter = `drop-shadow(0 0 8px ${color}40)`;
-  }
-  texts.forEach((t, i) => {
-    t.setAttribute('fill', i === 0 ? '#1e293b' : '#475569');
-  });
-}
-
-/**
- * 高亮本体图谱连线
- */
-function highlightOntologyEdge(edgeIndex, color) {
-  const line = document.getElementById(`call-edge-${edgeIndex}`);
-  const label = document.getElementById(`call-edge-label-${edgeIndex}`);
-  if (line) {
-    line.setAttribute('stroke', color);
-    line.setAttribute('stroke-width', '2');
-    line.style.opacity = '0.8';
-  }
-  if (label) {
-    label.setAttribute('fill', '#475569');
+function highlightDTNode(nodeId, glow) {
+  const el = document.getElementById('dt-' + nodeId);
+  if (el) {
+    el.style.opacity = '1';
+    el.style.fontWeight = '600';
+    if (glow) {
+      el.style.boxShadow = '0 0 12px ' + glow + '40, 0 2px 8px ' + glow + '20';
+    }
   }
 }
 
 /**
- * 开始通话 (预加载 + 增量修正)
+ * 开始通话 (预加载 + 增量修正 + 动态决策树)
  */
 function startCall() {
   callOverlay.style.display = 'flex';
@@ -726,12 +865,7 @@ function startCall() {
   chatWrapper.innerHTML = '';
 
   // 预加载阶段：设置右侧等待状态
-  navigatorBody.innerHTML = `
-    <div class="nav-empty-state" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#64748b; font-size:13px; margin-top: 60px;">
-      <div class="spinner-pulse" style="width:20px; height:20px; border:2px solid #3b82f6; border-top-color:transparent; border-radius:50%; margin-bottom:12px; animation: spin 1s linear infinite;"></div>
-      <span>预加载策略就绪，监听对话流...</span>
-    </div>
-  `;
+  navigatorBody.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#64748b;font-size:13px;margin-top:60px;"><div style="width:20px;height:20px;border:2px solid #3b82f6;border-top-color:transparent;border-radius:50%;margin-bottom:12px;animation:spin 1s linear infinite;"></div><span>预加载策略就绪，监听对话流...</span></div>';
   if (navBadge) { navBadge.textContent = '待命'; navBadge.style.color = '#94a3b8'; }
 
   // 若没有预置动画，动态插入
@@ -739,79 +873,50 @@ function startCall() {
     const style = document.createElement('style');
     style.id = 'callAnimations';
     style.innerHTML = `
-      @keyframes spin { 100% { transform: rotate(360deg); } }
-      @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    `;
+  @keyframes spin { 100 % { transform: rotate(360deg); } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  `;
     document.head.appendChild(style);
   }
 
-  // 渲染初始灰色本体图谱
-  const callOntology = document.getElementById('callOntology');
-  if (currentCustomer && currentCustomer.ontologyGraph && callOntology) {
-    callOntology.innerHTML = renderCallOntology(currentCustomer.ontologyGraph);
+  // 渲染动态决策树（初始灰色）
+  const callDT = document.getElementById('callDecisionTree');
+  if (callDT) {
+    callDT.innerHTML = renderCallDecisionTree();
   }
 
   callTimer = setInterval(() => {
     callSeconds++;
     updateCallDuration();
 
-    // =============== 小朱四轮高情商对话 + Agent 副驾驶 ===============
+    // =============== 新对话脚本（基于设计文档：1.5分钟/小朱/流式输出） ===============
 
-    // T+2: 小朱破冰开场（预加载话术，绝口不提解绑）
+    // T+2: 小朱专业切入开场白
     if (callSeconds === 2) {
-      appendChatBubble('agent', '李总上午好，我是您的专属客户经理小朱。看到您前两天去了一趟XX支行办业务，那天正好赶上系统升级，大堂经理跟我说您等了挺久的，我心里特别过意不去，专门打个电话给您做个服务回访，顺便道个歉。');
-      // 本体高亮：网点访问
-      try {
-        highlightOntologyNode('branchVisit', '#3b82f6');
-        highlightOntologyNode('customer', '#2563eb');
-        highlightOntologyEdge(2, '#3b82f6');
-      } catch (e) { }
+      appendChatBubble('agent', '李总上午好，我是小朱。看到您前两天去了XX支行……我心里特别过意不去，专门打电话做个回访，顺便道个歉。');
+      // 决策树高亮：通话开始 + 意图识别
+      highlightDTNode('start', '#3b82f6');
+      highlightDTNode('intent', '#8b5cf6');
     }
 
-    // T+6: 李总愤怒倒苦水（客户主动说出痛点 + 解绑 + 转走）
-    if (callSeconds === 6) {
-      appendChatBubble('customer', '你们那个柜台到底怎么回事？办个简单的业务让我等了快两个半小时！柜员还爱答不理的。我一生气把你们行的水电煤代扣全关了，正准备下周把资金转走呢。');
+    // T+15: 李总愤怒爆发（VIP + 排队 + 柜员态度差）
+    if (callSeconds === 15) {
+      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我把代扣全关了，正准备下周把资金转走！');
+      // 高亮：意图B（服务不满/愤怒）
+      highlightDTNode('intent-b', '#ef4444');
     }
 
-    // T+7: ⚡ Agent 实时意图与情绪监控（极速拦截）
-    if (callSeconds === 7) {
-      // 本体高亮：投诉工单 + 网点 + 代缴授权
-      try {
-        highlightOntologyNode('complaint', '#ef4444');
-        highlightOntologyNode('branch', '#64748b');
-        highlightOntologyNode('auth', '#f59e0b');
-        highlightOntologyEdge(4, '#ef4444');
-        highlightOntologyEdge(5, '#64748b');
-        highlightOntologyEdge(3, '#f59e0b');
-      } catch (e) { }
-
-      // 右侧导航仪：卡片1
+    // T+22: ⚡ Agent 实时意图与情绪监控
+    if (callSeconds === 22) {
+      highlightDTNode('agent-b', '#3b82f6');
       navigatorBody.innerHTML = '';
       if (navBadge) { navBadge.textContent = '🔴 拦截中'; navBadge.style.color = '#ef4444'; }
-      appendNavigatorCard('warning', '⚡ 实时意图与情绪监控', `
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <span style="background:#7f1d1d; color:#fca5a5; padding:2px 8px; border-radius:4px; font-size:11px;">🔴 极高风险</span>
-          <span style="background:#7f1d1d; color:#fca5a5; padding:2px 8px; border-radius:4px; font-size:11px;">😡 情绪：愤怒</span>
-        </div>
-        <div style="font-size:12px; color:#94a3b8; line-height:1.6;">
-          痛点锁定：网点排队 2.5h + 柜员态度差<br>
-          危险意图：主动提及「下周资金转走」
-        </div>
-        <div style="margin-top:8px; padding:6px 10px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:4px; font-size:11px; color:#fca5a5;">
-          ⚠️ 常规话术已失效，启动升级挽留预案
-        </div>
-      `);
+      appendNavigatorCard('warning', '⚡ 实时意图与情绪监控', '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">🔴 极高风险</span><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">😡 情绪：愤怒</span></div><div style="font-size:12px;color:#94a3b8;line-height:1.6;">意图识别：<span style="color:#fca5a5;font-weight:600;">抱怨服务/VIP权益未兑现</span><br>关键词命中：「排队」「资金转走」「关代扣」<br>痛点锁定：排队 2.5h + 柜员态度差 + 资金流出意向</div><div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:4px;font-size:11px;color:#fca5a5;">⚠️ 常规话术已失效 → 启动升级挽留预案</div>');
     }
 
-    // T+9: 🤖 LLM 动态策略修正
-    if (callSeconds === 9) {
+    // T+25: 🤖 LLM 动态策略修正
+    if (callSeconds === 25) {
       if (navBadge) { navBadge.textContent = '🔄 策略修正'; navBadge.style.color = '#60a5fa'; }
-      // 本体高亮：红酒品鉴会
-      try {
-        highlightOntologyNode('wineEvent', '#8b5cf6');
-        highlightOntologyEdge(9, '#8b5cf6');
-      } catch (e) { }
-
       appendNavigatorCard('suggestion', '🤖 LLM 动态策略修正 <span style="color:#64748b; font-weight:400; font-size:11px;">(850ms)</span>', `
         <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
           <span style="background:#1e3a5f; color:#93c5fd; padding:2px 8px; border-radius:4px; font-size:11px;">情绪安抚</span>
@@ -819,38 +924,70 @@ function startCall() {
           <span style="background:#1e3a5f; color:#93c5fd; padding:2px 8px; border-radius:4px; font-size:11px;">降阻挽回</span>
         </div>
         <div style="margin-top:6px; padding:8px 10px; background:rgba(255,255,255,0.04); border-radius:6px; color:#e2e8f0; font-size:12px; line-height:1.5;">
-          💡 <span style="color:#60a5fa;">话术指引：</span>"对不住您…向分行反映柜员问题…申请一支 18 年奔富…代扣停了怕影响信用积分，给您发个'一键恢复链接'？"
+          💡 <span style="color:#60a5fa;">话术指引：</span>"对不住您…柜员态度我立刻反映…申请18年奔富做赔礼…代扣停了影响信用积分，发一键恢复链接…"
         </div>
       `);
     }
 
-    // T+12: 小朱按 Agent 提示回应
-    if (callSeconds === 12) {
-      appendChatBubble('agent', '实在对不住您李总，耗了您那么多宝贵时间，那个柜员的态度问题我一定向分行立刻反映。我知道您平时对红酒很有研究，特意申请了一支18年的奔富作为赔礼。另外，您的代扣业务要是停了，可能会影响下个月的信用积分，您看我这边直接在后台帮您发送一个一键恢复的确认链接可以吗？');
+    // T+30: 小朱第一轮回应（共情 + 提供补偿 + 一键恢复链接）
+    if (callSeconds === 30) {
+      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您代扣都停了，怕影响您平时信用积分，要不我给您发个一键恢复链接？');
+      highlightDTNode('act-b1', '#3b82f6'); // 匹配左侧的意图：承诺解决+个性化挽留
     }
 
-    // T+16: 李总傲娇同意
-    if (callSeconds === 16) {
-      appendChatBubble('customer', '行吧，看你态度还不错。你把链接发过来我自己点，红酒你直接寄到我公司吧，下次去网点别再让我排那么久了。');
+    // T+48: 李总傲娇接受
+    if (callSeconds === 48) {
+      appendChatBubble('customer', '行吧，看你态度还不错。链接发过来我自己点，红酒寄到公司。');
+      highlightDTNode('cust-b1', '#059669'); // 客户: 情绪缓和, 接受道歉
+      highlightDTNode('cust-r1', '#059669'); // 对方案感兴趣
     }
 
-    // T+17: ✅ 挽留窗口开启
-    if (callSeconds === 17) {
+    // T+54: ✅ Agent 闭环执行
+    if (callSeconds === 54) {
+      highlightDTNode('act-final', '#059669');
       if (navBadge) { navBadge.textContent = '✅ 已闭环'; navBadge.style.color = '#34d399'; }
-      appendNavigatorCard('success', '✅ 挽留窗口开启', `
+      appendNavigatorCard('success', '✅ 挽留窗口开启 · 待办事项', `
         <div style="display:flex; gap:8px; margin-bottom:8px;">
           <span style="background:#064e3b; color:#6ee7b7; padding:2px 8px; border-radius:4px; font-size:11px;">🟢 情绪缓和</span>
           <span style="background:#064e3b; color:#6ee7b7; padding:2px 8px; border-radius:4px; font-size:11px;">📝 业务闭环</span>
         </div>
         <div style="font-size:12px; color:#94a3b8; line-height:1.6;">
           Agent 自动执行：<br>
-          ├─ 生成《代扣一键恢复授权》链接 <span style="background:#065f46; color:#6ee7b7; padding:1px 6px; border-radius:3px; font-size:10px; cursor:pointer;">一键发送</span><br>
-          └─ 创建客诉工单 → XX支行行长
+            ├─ 创建投诉工单 #8892 → XX支行行长<br>
+            ├─ 生成《代扣一键恢复授权》短链<br>
+            └─ 发送产品资料与恢复链接 <span id="btnSendMaterial" onclick="sendProductMaterial(this)" style="background:#065f46; color:#6ee7b7; padding:1px 6px; border-radius:3px; font-size:10px; cursor:pointer; transition:all 0.2s;">一键发送</span>
         </div>
       `);
     }
 
-  }, 1000);
+    // T+58: 小朱收尾
+    if (callSeconds === 58) {
+      appendChatBubble('agent', '感谢李总的理解和支持！链接和红酒这就给您安排。另外如果您那几千万资金还在犹豫，我们这儿正好有个专属高净值的理财产品，我也一并打包发您微信了，您随时召唤我。');
+      highlightDTNode('end', '#3b82f6');
+    }
+
+    // T+72: 工单追踪卡片 (展示最后状态)
+    if (callSeconds === 72) {
+      appendNavigatorCard('info', '📋 实时追踪工单', `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:14px; font-weight:700; color:#e2e8f0; letter-spacing:0.5px;">#8892</span>
+          <span style="display:inline-flex; align-items:center; gap:4px; background:#064e3b; color:#6ee7b7; padding:2px 8px; border-radius:4px; font-size:11px;">
+            <span style="display:inline-block; width:8px; height:8px; border:2px solid #6ee7b7; border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
+            处理中
+          </span>
+        </div>
+        <div style="background:#334155; border-radius:4px; height:6px; overflow:hidden; margin-bottom:8px;">
+          <div style="background:linear-gradient(90deg, #3b82f6, #60a5fa); height:100%; width:35%; border-radius:4px; transition: width 1s ease;"></div>
+        </div>
+        <div style="font-size:11px; color:#64748b; margin-bottom:6px;">进度 35%</div>
+        <div style="font-size:11px; color:#94a3b8; line-height:1.5; padding:6px 8px; background:rgba(255,255,255,0.03); border-radius:4px;">
+          <span style="color:#60a5fa;">最新进展</span><br>
+          支行行长王总已介入，承诺24小时内给出初步方案
+        </div>
+      `);
+    }
+
+  }, 550);
 }
 
 /**
@@ -863,7 +1000,7 @@ function updateCallDuration() {
 }
 
 /**
- * 插入聊天气泡 (左侧对话流)
+ * 插入聊天气泡 (左侧对话流) - 带打字机流式效果
  */
 function appendChatBubble(role, text) {
   const chatWrapper = document.getElementById('chatWrapper');
@@ -872,9 +1009,9 @@ function appendChatBubble(role, text) {
   bubbleObj.className = `chat-bubble bubble-${role}`;
   bubbleObj.innerHTML = `
     <div class="bubble-avatar" style="font-size:18px; line-height:1.2; text-align:center; flex-shrink:0;">
-        ${role === 'agent' ? '👨‍💼<br><span style="font-size:10px; color:#64748b;">小朱</span>' : '👤<br><span style="font-size:10px; color:#64748b;">李总</span>'}
+      ${role === 'agent' ? '👨‍💼<br><span style="font-size:10px; color:#64748b;">小朱</span>' : '👤<br><span style="font-size:10px; color:#64748b;">李总</span>'}
     </div>
-    <div class="bubble-text" style="flex:1; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; ${role === 'agent' ? 'background:#eff6ff; color:#1e3a8a;' : 'background:#f8fafc; color:#334155; border:1px solid #e2e8f0;'}">${text}</div>
+    <div class="bubble-text" style="flex:1; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; min-height: 40px; ${role === 'agent' ? 'background:#eff6ff; color:#1e3a8a;' : 'background:#f8fafc; color:#334155; border:1px solid #e2e8f0;'}"></div>
   `;
   bubbleObj.style.display = 'flex';
   bubbleObj.style.gap = '10px';
@@ -884,7 +1021,62 @@ function appendChatBubble(role, text) {
 
   chatWrapper.appendChild(bubbleObj);
   chatWrapper.scrollTop = chatWrapper.scrollHeight;
+
+  const textNode = bubbleObj.querySelector('.bubble-text');
+  let charIndex = 0;
+  const typingSpeed = 50; // 50ms 每字，降低打字速度
+
+  function typeWord() {
+    if (charIndex < text.length) {
+      textNode.innerHTML += text.charAt(charIndex);
+      charIndex++;
+      chatWrapper.scrollTop = chatWrapper.scrollHeight;
+      setTimeout(typeWord, typingSpeed);
+    }
+  }
+
+  // 启动打字效果
+  typeWord();
 }
+
+/**
+ * 一键发送产品资料功能
+ */
+function sendProductMaterial(btn) {
+  if (btn.innerText === "✅ 已发送") return; // 防止重复点击
+
+  btn.innerText = "✅ 已发送";
+  btn.style.background = "#059669";
+  btn.style.color = "#ffffff";
+  btn.style.pointerEvents = "none";
+
+  // 简单的 toast 提示
+  const toast = document.createElement('div');
+  toast.innerText = "专属理财产品资料及链接已发送至李总微信";
+  toast.style.position = "absolute";
+  toast.style.bottom = "20px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+  toast.style.background = "rgba(15, 23, 42, 0.85)";
+  toast.style.color = "white";
+  toast.style.padding = "10px 20px";
+  toast.style.borderRadius = "8px";
+  toast.style.fontSize = "13px";
+  toast.style.zIndex = "1000";
+  toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  toast.style.animation = "fadeInUp 0.3s ease forwards";
+
+  const rightPanel = document.querySelector('.call-right');
+  if (rightPanel) {
+    rightPanel.position = "relative"; // 确保 toast 在右侧面板底部
+    rightPanel.appendChild(toast);
+    setTimeout(() => {
+      toast.style.animation = "fadeInUp 0.3s ease reverse backwards";
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+}
+
 
 /**
  * 插入增量导航卡片 (右侧) — 状态灯 + 标签极简风格
@@ -912,14 +1104,17 @@ function appendNavigatorCard(type, title, contentHtml) {
   } else if (type === 'success') {
     card.style.borderLeftColor = '#10b981';
     card.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.15)';
+  } else if (type === 'info') {
+    card.style.borderLeftColor = '#8b5cf6';
+    card.style.boxShadow = '0 0 12px rgba(139, 92, 246, 0.15)';
   }
 
-  const headerColor = type === 'warning' ? '#ef4444' : type === 'suggestion' ? '#60a5fa' : '#34d399';
+  const headerColor = type === 'warning' ? '#ef4444' : type === 'suggestion' ? '#60a5fa' : type === 'info' ? '#a78bfa' : '#34d399';
 
   card.innerHTML = `
-    <div style="font-weight:600; margin-bottom:8px; color:${headerColor}; font-size:13px;">${title}</div>
-    <div>${contentHtml}</div>
-  `;
+                <div style="font-weight:600; margin-bottom:8px; color:${headerColor}; font-size:13px;">${title}</div>
+                <div>${contentHtml}</div>
+                `;
 
   navigatorBody.appendChild(card);
   navigatorBody.scrollTop = navigatorBody.scrollHeight;
@@ -934,17 +1129,17 @@ function endCall() {
 
   // 显示通话结束弹窗
   modalContent.innerHTML = `
-    <div class="modal-icon">📞</div>
-    <div class="modal-title">通话已结束</div>
-    <div class="modal-desc">
-      通话时长：${callDuration.textContent}<br><br>
-      Agent 建议：记录本次沟通内容，并在24小时内跟进投诉处理结果。
-    </div>
-    <div class="modal-buttons">
-      <button class="btn btn-secondary" id="modalCancel">稍后处理</button>
-      <button class="btn btn-primary" id="modalConfirm">记录沟通</button>
-    </div>
-  `;
+                <div class="modal-icon">📞</div>
+                <div class="modal-title">通话已结束</div>
+                <div class="modal-desc">
+                  通话时长：${callDuration.textContent}<br><br>
+                    Agent 建议：记录本次沟通内容，并在24小时内跟进投诉处理结果。
+                  </div>
+                    <div class="modal-buttons">
+                      <button class="btn btn-secondary" id="modalCancel">稍后处理</button>
+                      <button class="btn btn-primary" id="modalConfirm">记录沟通</button>
+                    </div>
+                    `;
   modalOverlay.classList.add('active');
 
   document.getElementById('modalConfirm').addEventListener('click', () => {
@@ -987,267 +1182,125 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * 生成图文报告并调用打印(另存为PDF)
+ * 生成图文报告并在内嵌 overlay 中展示
  */
 function generateAndPrintReport(customer) {
-  // 提取客户本体图谱的SVG内容(假设当前在页面上已经渲染了，直接获取其 innerHTML)
-  // 如果页面上没渲染，可以重新调 renderOntologyGraph 拿到 SVG 内容
   const graphSvg = renderOntologyGraph(customer.ontologyGraph);
 
-  const reportHtml = `
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <title>流失预警分析报告 - ${customer.name}</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #f3f4f6;
-      color: #1f2937;
-      margin: 0;
-      padding: 40px;
-      line-height: 1.6;
-    }
-    .report-container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      padding: 50px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      border-top: 6px solid #2563eb;
-    }
-    .header {
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 20px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #111827;
-      letter-spacing: -0.5px;
-    }
-    .header .meta {
-      font-size: 14px;
-      color: #6b7280;
-      text-align: right;
-    }
-    .profile-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .profile-info h2 { margin: 0 0 5px 0; color: #1e293b; font-size: 20px; }
-    .profile-info p { margin: 0; color: #64748b; font-size: 14px; }
-    .risk-badge {
-      background: #fee2e2;
-      color: #ef4444;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 18px;
-      border: 1px solid #fecaca;
-    }
-    
-    .section-title {
-      font-size: 18px;
-      color: #1e293b;
-      border-left: 4px solid #3b82f6;
-      padding-left: 12px;
-      margin: 30px 0 15px 0;
-      font-weight: 600;
-    }
-    
-    .ontology-wrapper {
-      background: #fafaf9;
-      border: 1px solid #e7e5e4;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 15px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: center;
-    }
-    /* 调整 SVG 大小适应报告 */
-    .ontology-wrapper svg {
-      width: 100%;
-      height: 350px;
-    }
-
-    .cot-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .cot-item {
-      display: flex;
-      margin-bottom: 20px;
-    }
-    .cot-icon {
-      flex-shrink: 0;
-      width: 36px;
-      height: 36px;
-      background: #eff6ff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      margin-right: 15px;
-    }
-    .cot-content h4 {
-      margin: 0 0 5px 0;
-      font-size: 16px;
-      color: #1f2937;
-    }
-    .cot-content p {
-      margin: 0;
-      font-size: 14px;
-      color: #4b5563;
-    }
-    .highlight { color: #ef4444; font-weight: 600; }
-    .highlight-blue { color: #2563eb; font-weight: 600; }
-    
-    .strategy-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 30px;
-    }
-    .strategy-box h4 {
-      margin: 0 0 10px 0;
-      color: #166534;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .script-box {
-      background: white;
-      border: 1px solid #dcfce3;
-      padding: 15px;
-      border-radius: 6px;
-      color: #374151;
-      font-style: italic;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-    .reason-text {
-      font-size: 13px;
-      color: #15803d;
-      margin: 0;
-    }
-
-    @media print {
-      body { background-color: white; padding: 0; }
-      .report-container { box-shadow: none; padding: 0; max-width: 100%; border-top: none; }
-      /* 隐藏打印界面的不必要元素 */
-      @page { margin: 1.5cm; }
-    }
-  </style>
-</head>
-<body>
-  <div class="report-container">
-    <div class="header">
-      <div>
-        <h1>高净值客户智能预警分析报告</h1>
-        <div style="color: #6366f1; font-weight: 600; margin-top: 5px; font-size: 14px;">Powered by AgentBuilder & Ontology</div>
-      </div>
-      <div class="meta">
-        生成时间：${new Date().toLocaleString()}<br>
-        报告编号：RPT-${Math.floor(Math.random() * 1000000)}
-      </div>
+  // 生成决策树 HTML
+  let decisionTreeHtml = `
+    <div class="section-title">四、 预设决策树 (Pre-loaded Strategy)</div>
+    <div style="font-size:14px;color:#4b5563;margin-bottom:15px;">
+      通话前 Agent 基于本体图谱预先计算并缓存的完整决策分支。此处展示用于实时通话辅助的策略树全貌。
     </div>
-
-    <div class="profile-card">
-      <div class="profile-info">
-        <h2>${customer.name}</h2>
-        <p>资产管理规模 (AUM): ${customer.aum} | 客户评级: 私人银行</p>
-      </div>
-      <div class="risk-badge">
-        流失风险: ${customer.riskScore} 分
-      </div>
+    <div style="background:#fafaf9;border:1px solid #e7e5e4;border-radius:8px;padding:20px;margin-bottom:30px;">
+      ${renderCallDecisionTree(true)}
     </div>
-
-    <div class="section-title">一、 核心异动感知 (Core Anomaly Detection)</div>
-    <div style="font-size: 14px; color: #4b5563; margin-bottom: 20px;">
-      Agent 监控网络捕捉到客户近日发起 <span class="highlight-blue">多项代扣业务解绑</span>。此动作虽未直接导致AUM下降，但引发了高度预警信号：<strong>资金归集频率呈断崖式下降</strong>。这一前置指标往往是高净值资金大规模转移的先兆。
-    </div>
-
-    <div class="section-title">二、 本体下钻追踪 (Ontology Deep Dive)</div>
-    <div style="font-size: 14px; color: #4b5563;">
-      为探明解绑原因，Agent 跨系统唤醒了客户本体网络资源，将交易流、网点服务流与客诉数据进行时空折叠。下图为映射出的完整业务真相链条：
-    </div>
-    <div class="ontology-wrapper">
-      ${graphSvg}
-    </div>
-
-    <div class="section-title">三、 Agent 跨域线索整合与定性</div>
-    <ul class="cot-list">
-      <li class="cot-item">
-        <div class="cot-icon">📍</div>
-        <div class="cot-content">
-          <h4>时空特征提取</h4>
-          <p>T-3 天在 [XX支行] 产生网点访问记录，业务停留耗时 <span class="highlight">145 分钟</span>，远超该行均值。</p>
-        </div>
-      </li>
-      <li class="cot-item">
-        <div class="cot-icon">🗣️</div>
-        <div class="cot-content">
-          <h4>多模态情绪识别</h4>
-          <p>穿透 [XX支行] 客服语音及投诉文本，提取到高频 <span class="highlight">愤怒情绪</span> 标签，确认该工单当前 <strong>尚未妥善闭环</strong>。</p>
-        </div>
-      </li>
-      <li class="cot-item">
-        <div class="cot-icon">🧠</div>
-        <div class="cot-content">
-          <h4>决策定性</h4>
-          <p>Agent 判断本次资金异动并非正常财务调整，而是 <span class="highlight">"服务体验恶化导致的报复性解绑"</span>，预计7天内流失率将达 99%。</p>
-        </div>
-      </li>
-    </ul>
-
-    <div class="strategy-box">
-      <h4>💡 智能闭环挽留策略</h4>
-      <div class="script-box">
-        "${customer.script}"
-      </div>
-      <p class="reason-text">
-        <strong>策略归因：</strong>${customer.gift ? customer.gift.reason : ''}
-      </p>
-    </div>
-    
-  </div>
-  <script>
-    // 渲染完成后自动触发打印
-    window.onload = function() {
-      setTimeout(() => {
-        window.print();
-      }, 500);
-    }
-  </script>
-</body>
-</html>
   `;
 
-  // 打开新页面
-  const printWin = window.open('', '_blank');
-  if (printWin) {
-    printWin.document.open();
-    printWin.document.write(reportHtml);
-    printWin.document.close();
-  } else {
-    alert('请允许浏览器打开弹出窗口，以生成分析报告。');
-  }
+  const reportContent = `
+                    <div style="max-width:800px;width:100%;background:white;padding:50px;box-shadow:0 10px 25px rgba(0,0,0,0.05);border-top:6px solid #2563eb;border-radius:0 0 8px 8px;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#1f2937;line-height:1.6;">
+
+                      <div style="border-bottom:2px solid #e5e7eb;padding-bottom:20px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:flex-end;">
+                        <div>
+                          <h1 style="margin:0;font-size:24px;color:#111827;letter-spacing:-0.5px;">高净值客户智能预警分析报告</h1>
+                          <div style="color:#6366f1;font-weight:600;margin-top:5px;font-size:14px;">Powered by AgentBuilder & Ontology</div>
+                        </div>
+                        <div style="font-size:14px;color:#6b7280;text-align:right;">
+                          生成时间：${new Date().toLocaleString()}<br>
+                            报告编号：RPT-${Math.floor(Math.random() * 1000000)}
+                        </div>
+                      </div>
+
+                      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                          <h2 style="margin:0 0 5px 0;color:#1e293b;font-size:20px;">${customer.name}</h2>
+                          <p style="margin:0;color:#64748b;font-size:14px;">资产管理规模 (AUM): ${customer.aum} | 客户评级: 私人银行</p>
+                        </div>
+                        <div style="background:#fee2e2;color:#ef4444;padding:10px 20px;border-radius:6px;font-weight:bold;font-size:18px;border:1px solid #fecaca;">
+                          流失风险: ${customer.riskScore} 分
+                        </div>
+                      </div>
+
+                      <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">一、 核心异动感知</div>
+                      <div style="font-size:14px;color:#4b5563;margin-bottom:20px;">
+                        Agent 监控网络捕捉到客户近日发起 <span style="color:#2563eb;font-weight:600;">多项代扣业务解绑</span>。此动作虽未直接导致AUM下降，但引发了高度预警信号：<strong>资金归集频率呈断崖式下降</strong>。
+                      </div>
+
+                      <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">二、 本体下钻追踪</div>
+                      <div style="font-size:14px;color:#4b5563;">
+                        为探明解绑原因，Agent 跨系统唤醒了客户本体网络资源，将交易流、网点服务流与客诉数据进行时空折叠：
+                      </div>
+                      <div style="background:#fafaf9;border:1px solid #e7e5e4;border-radius:8px;padding:20px;margin:15px 0 30px 0;display:flex;justify-content:center;">
+                        <div style="width:100%;">${graphSvg}</div>
+                      </div>
+
+                      <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">三、 Agent 跨域线索整合与定性</div>
+                      <ul style="list-style:none;padding:0;margin:0;">
+                        <li style="display:flex;margin-bottom:20px;">
+                          <div style="flex-shrink:0;width:36px;height:36px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:15px;">📍</div>
+                          <div><h4 style="margin:0 0 5px 0;font-size:16px;color:#1f2937;">时空特征提取</h4><p style="margin:0;font-size:14px;color:#4b5563;">T-3 天在 [XX支行] 产生网点访问记录，业务停留耗时 <span style="color:#ef4444;font-weight:600;">145 分钟</span>，远超该行均值。</p></div>
+                        </li>
+                        <li style="display:flex;margin-bottom:20px;">
+                          <div style="flex-shrink:0;width:36px;height:36px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:15px;">🗣️</div>
+                          <div><h4 style="margin:0 0 5px 0;font-size:16px;color:#1f2937;">多模态情绪识别</h4><p style="margin:0;font-size:14px;color:#4b5563;">穿透 [XX支行] 客服语音及投诉文本，提取到高频 <span style="color:#ef4444;font-weight:600;">愤怒情绪</span> 标签，确认该工单当前 <strong>尚未妥善闭环</strong>。</p></div>
+                        </li>
+                        <li style="display:flex;margin-bottom:20px;">
+                          <div style="flex-shrink:0;width:36px;height:36px;background:#eff6ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-right:15px;">🧠</div>
+                          <div><h4 style="margin:0 0 5px 0;font-size:16px;color:#1f2937;">决策定性</h4><p style="margin:0;font-size:14px;color:#4b5563;">Agent 判断本次资金异动并非正常财务调整，而是 <span style="color:#ef4444;font-weight:600;">"服务体验恶化导致的报复性解绑"</span>，预计7天内流失率将达 99%。</p></div>
+                        </li>
+                      </ul>
+
+                      ${decisionTreeHtml}
+
+                      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px;margin-top:30px;">
+                        <h4 style="margin:0 0 10px 0;color:#166534;font-size:16px;display:flex;align-items:center;gap:8px;">💡 智能闭环挽留策略</h4>
+                        <div style="background:white;border:1px solid #dcfce3;padding:15px;border-radius:6px;color:#374151;font-style:italic;font-size:14px;margin-bottom:15px;">
+                          "${customer.script}"
+                        </div>
+                        <p style="font-size:13px;color:#15803d;margin:0;">
+                          <strong>策略归因：</strong>${customer.gift ? customer.gift.reason : ''}
+                        </p>
+                      </div>
+
+                    </div>
+                    `;
+
+  // 渲染到内嵌 overlay
+  const reportOverlay = document.getElementById('reportOverlay');
+  const reportBody = document.getElementById('reportBody');
+  if (!reportOverlay || !reportBody) return;
+
+  reportBody.innerHTML = reportContent;
+  reportOverlay.style.display = 'flex';
+
+  // 绑定关闭按钮
+  document.getElementById('reportCloseBtn').onclick = () => {
+    reportOverlay.style.display = 'none';
+  };
+
+  // 绑定下载按钮（打开新窗口打印报告内容）
+  document.getElementById('reportDownloadBtn').onclick = () => {
+    const printWin = window.open('', '_blank');
+    if (printWin) {
+      printWin.document.open();
+      printWin.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="zh-CN">
+                      <head>
+                        <meta charset="UTF-8">
+                          <title>流失预警分析报告 - ${customer.name}</title>
+                          <style>
+                            body {font - family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #f3f4f6; margin: 0; padding: 40px; }
+                            @media print {body {background: white; padding: 0; } @page {margin: 1.5cm; } }
+                          </style>
+                      </head>
+                      <body>${reportContent}</body>
+                    </html>
+                    `);
+      printWin.document.close();
+      setTimeout(() => printWin.print(), 300);
+    }
+  };
 }
+
