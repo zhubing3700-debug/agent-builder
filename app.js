@@ -404,11 +404,11 @@ function setupOntologyTooltips() {
       ]
     },
     authChange: {
-      title: '⚡ 授权变更事件',
+      title: '⚡ 业务变更事件',
       lines: [
         '触发时间：T-0 天 09:15',
-        '变更类型：批量解绑',
-        '涉及业务：3 项代扣协议',
+        '变更类型：批量取消',
+        '涉及业务：房贷代扣 + 定投计划',
         '风险信号：<span style="color:#ef4444;">异常</span>'
       ]
     },
@@ -479,6 +479,38 @@ function setupOntologyTooltips() {
       ]
     }
   };
+
+  // 根据当前客户动态覆盖共用节点的 tooltip
+  if (currentCustomer && currentCustomer.id === 'zhang') {
+    tooltipData.customer = {
+      title: '👤 客户：张总',
+      lines: [
+        'AUM：¥120 万',
+        '标签：潜力型 · 代发工资',
+        '持有产品：6 项',
+        '客户经理：小朱',
+        '风险评分：<span style="color:#10b981;">15</span>'
+      ]
+    };
+    tooltipData.auth = {
+      title: '📄 定投计划',
+      lines: [
+        '类型：基金定投',
+        '动作：<span style="color:#f59e0b;">取消 (T-0)</span>',
+        '配偶新增签约：同一基金 (T+5min)',
+        '风险判定：<span style="color:#10b981;">低风险</span>'
+      ]
+    };
+    tooltipData.authChange = {
+      title: '⚡ 业务变更事件',
+      lines: [
+        '触发时间：昨日 20:15',
+        '变更类型：取消定投',
+        '涉及业务：基金定投计划',
+        '风险信号：<span style="color:#10b981;">低</span>'
+      ]
+    };
+  }
 
   const nodeEls = document.querySelectorAll('.ontology-node-hover');
   const tooltip = document.getElementById('ontologyTooltip');
@@ -925,7 +957,7 @@ function startCall() {
 
     // T+15: 李总愤怒爆发（VIP + 排队 + 柜员态度差）
     if (callSeconds === 15) {
-      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我房贷都提前还清了、定投也取消了，正准备下周把资金转走！');
+      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我房贷代扣和定投也取消了，正准备下周把资金转走！');
       // 高亮：意图B（服务不满/愤怒）
       highlightDTNode('intent-b', '#ef4444');
     }
@@ -935,7 +967,7 @@ function startCall() {
       highlightDTNode('agent-b', '#3b82f6');
       navigatorBody.innerHTML = '';
       if (navBadge) { navBadge.textContent = '🔴 拦截中'; navBadge.style.color = '#ef4444'; }
-      appendNavigatorCard('warning', '⚡ 实时意图与情绪监控', '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">🔴 极高风险</span><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">😡 情绪：愤怒</span></div><div style="font-size:12px;color:#94a3b8;line-height:1.6;">意图识别：<span style="color:#fca5a5;font-weight:600;">抱怨服务/VIP权益未兑现</span><br>关键词命中：「排队」「资金转走」「关代扣」<br>痛点锁定：排队 2.5h + 柜员态度差 + 资金流出意向</div><div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:4px;font-size:11px;color:#fca5a5;">⚠️ 常规话术已失效 → 启动升级挽留预案</div>');
+      appendNavigatorCard('warning', '⚡ 实时意图与情绪监控', '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">🔴 极高风险</span><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">😡 情绪：愤怒</span></div><div style="font-size:12px;color:#94a3b8;line-height:1.6;">意图识别：<span style="color:#fca5a5;font-weight:600;">抱怨服务/权益未兑现</span><br>关键词命中：「排队」「资金转走」「取消定投」「房贷代扣」<br>痛点锁定：排队 2.5h + 柜员态度差 + 资金流出意向</div><div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:4px;font-size:11px;color:#fca5a5;">⚠️ 常规话术已失效 → 启动升级挽留预案</div>');
     }
 
     // T+25: 🤖 LLM 动态策略修正
@@ -955,7 +987,7 @@ function startCall() {
 
     // T+30: 小朱第一轮回应（共情 + 提供补偿 + 一键恢复链接）
     if (callSeconds === 30) {
-      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您房贷都提前还清了，定投也取消了，这会影响您的银行星级评定和贵宾优先通道，要不我给您重新发个专属理财方案？');
+      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您房贷代扣和定投都取消了，这会影响您的银行星级评定和贵宾优先通道，要不我给您重新发个专属理财方案？');
       highlightDTNode('act-b1', '#3b82f6'); // 匹配左侧的意图：承诺解决+个性化挽留
     }
 
@@ -1000,7 +1032,7 @@ function startCall() {
 
     // T+58: 小朱收尾
     if (callSeconds === 58) {
-      appendChatBubble('agent', '感谢李总的理解和支持！链接和红酒这就给您安排。另外如果您那几千万资金还在犹豫，我们这儿正好有个专属高净值的理财产品，我也一并打包发您微信了，您随时召唤我。');
+      appendChatBubble('agent', '感谢李总的理解和支持！红酒这就给您安排。另外我们这有个专属的理财方案，我也一并打包发您微信了，您随时召唤我。');
       highlightDTNode('end', '#3b82f6');
     }
 
@@ -1090,7 +1122,7 @@ function sendProductMaterial(btn) {
 
   // 简单的 toast 提示
   const toast = document.createElement('div');
-  toast.innerText = "✅ 已发送至李总微信：代扣一键恢复链接 + 奔富红酒专属礼遇单 + 高净值理财产品资料";
+  toast.innerText = "✅ 已发送至李总微信：专属理财方案 + 奔富红酒专属礼遇单 + 定投优化方案";
   toast.style.position = "absolute";
   toast.style.bottom = "20px";
   toast.style.left = "50%";
