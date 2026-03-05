@@ -44,7 +44,7 @@ const customerData = {
         { id: 'branchVisit', label: '网点访问', type: 'event', x: 400, y: 50, color: '#3b82f6', borderColor: '#2563eb' },
         // 对象层
         { id: 'customer', label: '客户', subtitle: '李总', type: 'object', x: 380, y: 180, color: '#2563eb', borderColor: '#1d4ed8' },
-        { id: 'auth', label: '业务协议', subtitle: '房贷提前还贷+定投取消', type: 'object', x: 80, y: 280, color: '#ef4444', borderColor: '#dc2626' },
+        { id: 'auth', label: '业务协议', subtitle: '解绑基金定投+停止自动理财申购', type: 'object', x: 80, y: 280, color: '#ef4444', borderColor: '#dc2626' },
         { id: 'complaint', label: '投诉工单', subtitle: '未闭环', type: 'object', x: 280, y: 310, color: '#2563eb', borderColor: '#1d4ed8' },
         { id: 'branch', label: '银行网点', subtitle: 'XX支行', type: 'object', x: 480, y: 310, color: '#2563eb', borderColor: '#1d4ed8' },
         { id: 'serviceRecord', label: '客服录音', subtitle: '柜员服务记录', type: 'object', x: 380, y: 420, color: '#f59e0b', borderColor: '#d97706' },
@@ -68,8 +68,8 @@ const customerData = {
         type: 'perceive',
         icon: '📍',
         title: '感知',
-        text: '捕捉到李总触发多项业务 <span class="key">[房贷提前还贷 + 定投取消]</span> 动作，<span class="key">资金归集频率明显下降</span>。',
-        ontologyCall: '【实体】业务协议 -【属性】操作类型 → 房贷提前还贷 + 定投计划取消 (T-0)  |  【实体】业务协议 -【属性】月均归集额 → ¥8.5万 → ¥0（归零）'
+        text: '捕捉到李总触发多项业务 <span class="key">[解绑基金定投 + 停止自动理财申购]</span> 动作，<span class="key">资金归集频率明显下降</span>。',
+        ontologyCall: '【实体】业务协议 -【属性】操作类型 → 解绑基金定投 + 停止自动理财申购 (T-0)  |  【实体】业务协议 -【属性】月均归集额 → ¥8.5万 → ¥0（归零）'
       },
       {
         type: 'reason',
@@ -151,7 +151,7 @@ const customerData = {
         icon: '📍',
         title: '感知',
         text: '监测到张总（客户号A）于昨日 20:15 <span class="key">取消了基金定投计划</span>。',
-        ontologyCall: '【实体】业务协议 -【属性】操作类型 → 取消定投  |  【实体】定投计划 -【属性】业务类别 → 基金定投'
+        ontologyCall: '【实体】业务协议 -【属性】操作类型 → 停止自动理财申购  |  【实体】定投计划 -【属性】业务类别 → 基金定投'
       },
       {
         type: 'reason',
@@ -397,7 +397,7 @@ function setupOntologyTooltips() {
     auth: {
       title: '📄 业务协议',
       lines: [
-        '类型：房贷提前还贷 + 定投取消',
+        '类型：解绑基金定投 + 停止自动理财申购',
         '动作：<span style="color:#ef4444;">全部取消 (T-0)</span>',
         '影响：月均归集额从¥8.5万归零',
         '关联风险：银行星级评定受损'
@@ -408,7 +408,7 @@ function setupOntologyTooltips() {
       lines: [
         '触发时间：T-0 天 09:15',
         '变更类型：批量取消',
-        '涉及业务：房贷代扣 + 定投计划',
+        '涉及业务：基金定投 + 理财申购',
         '风险信号：<span style="color:#ef4444;">异常</span>'
       ]
     },
@@ -505,7 +505,7 @@ function setupOntologyTooltips() {
       title: '⚡ 业务变更事件',
       lines: [
         '触发时间：昨日 20:15',
-        '变更类型：取消定投',
+        '变更类型：停止自动理财申购',
         '涉及业务：基金定投计划',
         '风险信号：<span style="color:#10b981;">低</span>'
       ]
@@ -957,7 +957,7 @@ function startCall() {
 
     // T+15: 李总愤怒爆发（VIP + 排队 + 柜员态度差）
     if (callSeconds === 15) {
-      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我房贷代扣和定投也取消了，正准备下周把资金转走！');
+      appendChatBubble('customer', '你们那个柜台到底怎么回事？等了两个半小时！柜员爱答不理！我基金定投和理财申购也都停了，正准备下周把资金转走！');
       // 高亮：意图B（服务不满/愤怒）
       highlightDTNode('intent-b', '#ef4444');
     }
@@ -967,7 +967,7 @@ function startCall() {
       highlightDTNode('agent-b', '#3b82f6');
       navigatorBody.innerHTML = '';
       if (navBadge) { navBadge.textContent = '🔴 拦截中'; navBadge.style.color = '#ef4444'; }
-      appendNavigatorCard('warning', '⚡ 实时意图与情绪监控', '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">🔴 极高风险</span><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">😡 情绪：愤怒</span></div><div style="font-size:12px;color:#94a3b8;line-height:1.6;">意图识别：<span style="color:#fca5a5;font-weight:600;">抱怨服务/权益未兑现</span><br>关键词命中：「排队」「资金转走」「取消定投」「房贷代扣」<br>痛点锁定：排队 2.5h + 柜员态度差 + 资金流出意向</div><div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:4px;font-size:11px;color:#fca5a5;">⚠️ 常规话术已失效 → 启动升级挽留预案</div>');
+      appendNavigatorCard('warning', '⚡ 实时意图与情绪监控', '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;"><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">🔴 极高风险</span><span style="background:#7f1d1d;color:#fca5a5;padding:2px 8px;border-radius:4px;font-size:11px;">😡 情绪：愤怒</span></div><div style="font-size:12px;color:#94a3b8;line-height:1.6;">意图识别：<span style="color:#fca5a5;font-weight:600;">抱怨服务/权益未兑现</span><br>关键词命中：「排队」「资金转走」「停止自动理财申购」「解绑基金定投」<br>痛点锁定：排队 2.5h + 柜员态度差 + 资金流出意向</div><div style="margin-top:8px;padding:6px 10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:4px;font-size:11px;color:#fca5a5;">⚠️ 常规话术已失效 → 启动升级挽留预案</div>');
     }
 
     // T+25: 🤖 LLM 动态策略修正
@@ -980,14 +980,14 @@ function startCall() {
           <span style="background:#1e3a5f; color:#93c5fd; padding:2px 8px; border-radius:4px; font-size:11px;">降阻挽回</span>
         </div>
         <div style="margin-top:6px; padding:8px 10px; background:rgba(255,255,255,0.04); border-radius:6px; color:#e2e8f0; font-size:12px; line-height:1.5;">
-          💡 <span style="color:#60a5fa;">话术指引：</span>"对不住您…柜员态度我立刻反映…申请18年奔富做赔礼…房贷还清定投取消会影响星级评定，发专属理财方案…"
+          💡 <span style="color:#60a5fa;">话术指引：</span>"对不住您…柜员态度我立刻反映…申请18年奔富做赔礼…解绑基金定投停止自动理财申购会影响星级评定，发专属理财方案…"
         </div>
       `);
     }
 
     // T+30: 小朱第一轮回应（共情 + 提供补偿 + 一键恢复链接）
     if (callSeconds === 30) {
-      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您房贷代扣和定投都取消了，这会影响您的银行星级评定和贵宾优先通道，要不我给您重新发个专属理财方案？');
+      appendChatBubble('agent', '对不住您李总……给您带来这么大麻烦。您刚提到的柜员态度问题，我立刻向分行反映，绝不姑息。我也知道您对红酒很有研究，特意给您申请了一支18年的奔富作为赔礼。我看您基金定投和理财申购都停了，这会影响您的银行星级评定和贵宾优先通道，要不我给您重新发个专属理财方案？');
       highlightDTNode('act-b1', '#3b82f6'); // 匹配左侧的意图：承诺解决+个性化挽留
     }
 
@@ -1294,7 +1294,7 @@ function generateAndPrintReport(customer) {
 
                       <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">一、 核心异动感知</div>
                       <div style="font-size:14px;color:#4b5563;margin-bottom:20px;">
-                        Agent 监控网络捕捉到客户近日发起 <span style="color:#2563eb;font-weight:600;">房贷提前还贷及定投计划取消</span>。此动作引发了高度预警信号：<strong>月均资金归集额从 ¥8.5万归零</strong>。
+                        Agent 监控网络捕捉到客户近日发起 <span style="color:#2563eb;font-weight:600;">解绑基金定投及停止自动理财申购</span>。此动作引发了高度预警信号：<strong>月均资金归集额从 ¥8.5万归零</strong>。
                       </div>
 
                       <div class="section-title" style="font-size:18px;color:#1e293b;border-left:4px solid #3b82f6;padding-left:12px;margin:30px 0 15px 0;font-weight:600;">二、 本体下钻追踪</div>
